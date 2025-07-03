@@ -9,12 +9,11 @@ import '../widgets/clothing_item_widget.dart';
 import '../widgets/category_filter_chip.dart';
 import '../widgets/advanced_filter_bottom_sheet.dart';
 import 'add_item_screen.dart';
-import 'outfit_builder_screen.dart';
-import 'outfit_list_screen.dart';
-import 'trip_planner_screen.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  final void Function(int)? onNavigateToTab;
+
+  const HomeScreen({super.key, this.onNavigateToTab});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -143,67 +142,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 },
               );
             },
-          ),
-
-          // Menu
-          PopupMenuButton<String>(
-            onSelected: (value) {
-              switch (value) {
-                case 'create_outfit':
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const OutfitBuilderScreen()),
-                  );
-                  break;
-                case 'my_outfits':
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const OutfitListScreen()),
-                  );
-                  break;
-                case 'trips':
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const TripPlannerScreen()),
-                  );
-                  break;
-              }
-            },
-            itemBuilder: (context) => [
-              const PopupMenuItem(
-                value: 'create_outfit',
-                child: Row(
-                  children: [
-                    Icon(Icons.add_circle_outline),
-                    SizedBox(width: 8),
-                    Text('Create Outfit'),
-                  ],
-                ),
-              ),
-              const PopupMenuItem(
-                value: 'my_outfits',
-                child: Row(
-                  children: [
-                    Icon(Icons.style),
-                    SizedBox(width: 8),
-                    Text('My Outfits'),
-                  ],
-                ),
-              ),
-              const PopupMenuItem(
-                value: 'trips',
-                child: Row(
-                  children: [
-                    Icon(Icons.travel_explore),
-                    SizedBox(width: 8),
-                    Text('Trips'),
-                  ],
-                ),
-              ),
-            ],
           ),
         ],
       ),

@@ -15,7 +15,7 @@ import 'bloc/clothing_bloc.dart';
 import 'bloc/clothing_event.dart';
 import 'cubit/filter_cubit.dart';
 import 'cubit/outfit_cubit.dart';
-import 'screens/home_screen.dart';
+import 'screens/main_navigation_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -144,6 +144,6 @@ class _AppInitializerState extends State<AppInitializer> {
       );
     }
 
-    return const HomeScreen();
+    return const MainNavigationScreen();
   }
 }
