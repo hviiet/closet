@@ -7,6 +7,7 @@ import '../cubit/filter_cubit.dart';
 import '../models/models.dart';
 import '../widgets/clothing_item_widget.dart';
 import '../widgets/category_filter_chip.dart';
+import '../widgets/advanced_filter_bottom_sheet.dart';
 import 'add_item_screen.dart';
 import 'outfit_builder_screen.dart';
 import 'trip_planner_screen.dart';
@@ -34,6 +35,103 @@ class _HomeScreenState extends State<HomeScreen> {
         title: const Text('TCloset'),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         actions: [
+          // Sort Button
+          BlocBuilder<FilterCubit, FilterState>(
+            builder: (context, filterState) {
+              return PopupMenuButton<SortOption>(
+                icon: Icon(
+                  Icons.sort,
+                  color: filterState.sortOption != SortOption.dateAdded
+                      ? Theme.of(context).colorScheme.primary
+                      : null,
+                ),
+                onSelected: (SortOption value) {
+                  context.read<FilterCubit>().setSortOption(value);
+                },
+                itemBuilder: (context) => [
+                  PopupMenuItem(
+                    value: SortOption.dateAdded,
+                    child: Row(
+                      children: [
+                        Icon(
+                          filterState.sortOption == SortOption.dateAdded
+                              ? Icons.radio_button_checked
+                              : Icons.radio_button_unchecked,
+                        ),
+                        const SizedBox(width: 8),
+                        const Text('Date Added'),
+                      ],
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: SortOption.category,
+                    child: Row(
+                      children: [
+                        Icon(
+                          filterState.sortOption == SortOption.category
+                              ? Icons.radio_button_checked
+                              : Icons.radio_button_unchecked,
+                        ),
+                        const SizedBox(width: 8),
+                        const Text('Category'),
+                      ],
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: SortOption.name,
+                    child: Row(
+                      children: [
+                        Icon(
+                          filterState.sortOption == SortOption.name
+                              ? Icons.radio_button_checked
+                              : Icons.radio_button_unchecked,
+                        ),
+                        const SizedBox(width: 8),
+                        const Text('Name'),
+                      ],
+                    ),
+                  ),
+                  const PopupMenuDivider(),
+                  PopupMenuItem(
+                    value: null,
+                    onTap: () {
+                      context.read<FilterCubit>().toggleSortOrder();
+                    },
+                    child: Row(
+                      children: [
+                        Icon(filterState.sortOrder == SortOrder.ascending
+                            ? Icons.arrow_upward
+                            : Icons.arrow_downward),
+                        const SizedBox(width: 8),
+                        Text(filterState.sortOrder == SortOrder.ascending
+                            ? 'Ascending'
+                            : 'Descending'),
+                      ],
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+
+          // Advanced Filter Button
+          BlocBuilder<FilterCubit, FilterState>(
+            builder: (context, filterState) {
+              return IconButton(
+                icon: Icon(
+                  Icons.filter_list,
+                  color: filterState.hasActiveFilters
+                      ? Theme.of(context).colorScheme.primary
+                      : null,
+                ),
+                onPressed: () {
+                  _showAdvancedFilters(context);
+                },
+              );
+            },
+          ),
+
+          // View Mode Toggle
           BlocBuilder<FilterCubit, FilterState>(
             builder: (context, filterState) {
               return IconButton(
@@ -45,6 +143,8 @@ class _HomeScreenState extends State<HomeScreen> {
               );
             },
           ),
+
+          // Menu
           PopupMenuButton<String>(
             onSelected: (value) {
               switch (value) {
@@ -120,6 +220,53 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
 
+          // Active Filters Display
+          BlocBuilder<FilterCubit, FilterState>(
+            builder: (context, filterState) {
+              if (!filterState.hasActiveFilters) return const SizedBox();
+
+              return Container(
+                width: double.infinity,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: Wrap(
+                  spacing: 8,
+                  runSpacing: 4,
+                  children: [
+                    if (filterState.selectedCategory != null)
+                      Chip(
+                        label: Text(
+                            'Category: ${filterState.selectedCategory!.displayName}'),
+                        onDeleted: () {
+                          context.read<FilterCubit>().setCategory(null);
+                        },
+                      ),
+                    ...filterState.selectedTags.map((tag) => Chip(
+                          label: Text('Tag: $tag'),
+                          onDeleted: () {
+                            context.read<FilterCubit>().removeTag(tag);
+                          },
+                        )),
+                    if (filterState.dateRange != null)
+                      Chip(
+                        label: Text(
+                            'Date Range: ${_formatDateRange(filterState.dateRange!)}'),
+                        onDeleted: () {
+                          context.read<FilterCubit>().setDateRange(null);
+                        },
+                      ),
+                    ActionChip(
+                      label: const Text('Clear All'),
+                      onPressed: () {
+                        context.read<FilterCubit>().clearAllFilters();
+                      },
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+
           // Category Filters
           Container(
             height: 60,
@@ -132,9 +279,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   category: null,
                   onSelected: (category) {
                     context.read<FilterCubit>().setCategory(category);
-                    context
-                        .read<ClothingBloc>()
-                        .add(FilterClothingByCategory(category));
                   },
                 ),
                 const SizedBox(width: 8),
@@ -148,9 +292,6 @@ class _HomeScreenState extends State<HomeScreen> {
                         context
                             .read<FilterCubit>()
                             .setCategory(selectedCategory);
-                        context
-                            .read<ClothingBloc>()
-                            .add(FilterClothingByCategory(selectedCategory));
                       },
                     ),
                   ),
@@ -199,42 +340,55 @@ class _HomeScreenState extends State<HomeScreen> {
                   );
                 }
 
-                if (clothingState.filteredItems.isEmpty) {
-                  return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.checkroom_outlined,
-                          size: 64,
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          clothingState.searchQuery.isNotEmpty
-                              ? 'No items found for "${clothingState.searchQuery}"'
-                              : 'No clothing items yet',
-                          style: Theme.of(context).textTheme.bodyLarge,
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          clothingState.searchQuery.isNotEmpty
-                              ? 'Try a different search term'
-                              : 'Add your first clothing item!',
-                          style:
-                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                return BlocBuilder<FilterCubit, FilterState>(
+                  builder: (context, filterState) {
+                    // Apply enhanced filtering
+                    final filteredItems = context
+                        .read<FilterCubit>()
+                        .applyFilters(clothingState.searchQuery.isEmpty
+                            ? clothingState.items
+                            : clothingState.filteredItems);
+
+                    if (filteredItems.isEmpty) {
+                      return Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.checkroom_outlined,
+                              size: 64,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurfaceVariant,
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              filterState.hasActiveFilters ||
+                                      clothingState.searchQuery.isNotEmpty
+                                  ? 'No items match your filters'
+                                  : 'No clothing items yet',
+                              style: Theme.of(context).textTheme.bodyLarge,
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              filterState.hasActiveFilters ||
+                                      clothingState.searchQuery.isNotEmpty
+                                  ? 'Try adjusting your filters or search terms'
+                                  : 'Add your first clothing item!',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(
                                     color: Theme.of(context)
                                         .colorScheme
                                         .onSurfaceVariant,
                                   ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                  );
-                }
+                      );
+                    }
 
-                return BlocBuilder<FilterCubit, FilterState>(
-                  builder: (context, filterState) {
                     if (filterState.isGridView) {
                       return GridView.builder(
                         padding: const EdgeInsets.all(16),
@@ -245,10 +399,10 @@ class _HomeScreenState extends State<HomeScreen> {
                           mainAxisSpacing: 16,
                           childAspectRatio: 0.8,
                         ),
-                        itemCount: clothingState.filteredItems.length,
+                        itemCount: filteredItems.length,
                         itemBuilder: (context, index) {
                           return ClothingItemWidget(
-                            item: clothingState.filteredItems[index],
+                            item: filteredItems[index],
                             isGridView: true,
                           );
                         },
@@ -256,12 +410,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     } else {
                       return ListView.separated(
                         padding: const EdgeInsets.all(16),
-                        itemCount: clothingState.filteredItems.length,
+                        itemCount: filteredItems.length,
                         separatorBuilder: (context, index) =>
                             const SizedBox(height: 12),
                         itemBuilder: (context, index) {
                           return ClothingItemWidget(
-                            item: clothingState.filteredItems[index],
+                            item: filteredItems[index],
                             isGridView: false,
                           );
                         },
@@ -290,5 +444,19 @@ class _HomeScreenState extends State<HomeScreen> {
         child: const Icon(Icons.add),
       ),
     );
+  }
+
+  void _showAdvancedFilters(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => const AdvancedFilterBottomSheet(),
+    );
+  }
+
+  String _formatDateRange(DateRange range) {
+    final start = '${range.startDate.day}/${range.startDate.month}';
+    final end = '${range.endDate.day}/${range.endDate.month}';
+    return '$start - $end';
   }
 }

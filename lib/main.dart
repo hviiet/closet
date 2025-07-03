@@ -3,6 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 import 'models/hive_adapters.dart';
+import 'models/clothing_item.dart';
+import 'models/outfit_set.dart';
+import 'models/trip.dart';
 import 'repositories/hive_clothing_repository.dart';
 import 'repositories/hive_outfit_repository.dart';
 import 'repositories/hive_trip_repository.dart';
@@ -22,6 +25,9 @@ void main() async {
 
   // Register adapters
   Hive.registerAdapter(ClothingCategoryAdapter());
+  Hive.registerAdapter(ClothingItemAdapter());
+  Hive.registerAdapter(OutfitSetAdapter());
+  Hive.registerAdapter(TripAdapter());
 
   runApp(const TClosetApp());
 }

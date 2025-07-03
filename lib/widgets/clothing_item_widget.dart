@@ -9,11 +9,13 @@ import '../services/file_storage_service.dart';
 class ClothingItemWidget extends StatelessWidget {
   final ClothingItem item;
   final bool isGridView;
+  final bool handleOnTap;
 
   const ClothingItemWidget({
     super.key,
     required this.item,
     required this.isGridView,
+    this.handleOnTap = true,
   });
 
   @override
@@ -29,7 +31,7 @@ class ClothingItemWidget extends StatelessWidget {
     return Card(
       clipBehavior: Clip.antiAlias,
       child: InkWell(
-        onTap: () => _showItemDetails(context),
+        onTap: handleOnTap ? () => _showItemDetails(context) : null,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [

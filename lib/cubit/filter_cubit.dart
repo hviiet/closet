@@ -2,7 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import '../models/models.dart';
 
-enum SortOption { dateAdded, category, name }
+enum SortOption { dateAdded, category, name, recentlyUsed }
 
 enum SortOrder { ascending, descending }
 
@@ -11,12 +11,18 @@ class FilterState extends Equatable {
   final SortOption sortOption;
   final SortOrder sortOrder;
   final bool isGridView;
+  final List<String> selectedTags;
+  final bool showOnlyFavorites;
+  final DateRange? dateRange;
 
   const FilterState({
     this.selectedCategory,
     this.sortOption = SortOption.dateAdded,
     this.sortOrder = SortOrder.descending,
     this.isGridView = true,
+    this.selectedTags = const [],
+    this.showOnlyFavorites = false,
+    this.dateRange,
   });
 
   FilterState copyWith({
@@ -24,7 +30,12 @@ class FilterState extends Equatable {
     SortOption? sortOption,
     SortOrder? sortOrder,
     bool? isGridView,
+    List<String>? selectedTags,
+    bool? showOnlyFavorites,
+    DateRange? dateRange,
     bool clearCategory = false,
+    bool clearTags = false,
+    bool clearDateRange = false,
   }) {
     return FilterState(
       selectedCategory:
@@ -32,12 +43,38 @@ class FilterState extends Equatable {
       sortOption: sortOption ?? this.sortOption,
       sortOrder: sortOrder ?? this.sortOrder,
       isGridView: isGridView ?? this.isGridView,
+      selectedTags: clearTags ? [] : (selectedTags ?? this.selectedTags),
+      showOnlyFavorites: showOnlyFavorites ?? this.showOnlyFavorites,
+      dateRange: clearDateRange ? null : (dateRange ?? this.dateRange),
     );
   }
 
+  bool get hasActiveFilters =>
+      selectedCategory != null ||
+      selectedTags.isNotEmpty ||
+      showOnlyFavorites ||
+      dateRange != null;
+
   @override
-  List<Object?> get props =>
-      [selectedCategory, sortOption, sortOrder, isGridView];
+  List<Object?> get props => [
+        selectedCategory,
+        sortOption,
+        sortOrder,
+        isGridView,
+        selectedTags,
+        showOnlyFavorites,
+        dateRange,
+      ];
+}
+
+class DateRange extends Equatable {
+  final DateTime startDate;
+  final DateTime endDate;
+
+  const DateRange({required this.startDate, required this.endDate});
+
+  @override
+  List<Object> get props => [startDate, endDate];
 }
 
 class FilterCubit extends Cubit<FilterState> {
@@ -69,7 +106,108 @@ class FilterCubit extends Cubit<FilterState> {
     emit(state.copyWith(isGridView: !state.isGridView));
   }
 
-  void clearFilters() {
-    emit(const FilterState());
+  void addTag(String tag) {
+    if (!state.selectedTags.contains(tag)) {
+      final newTags = List<String>.from(state.selectedTags)..add(tag);
+      emit(state.copyWith(selectedTags: newTags));
+    }
+  }
+
+  void removeTag(String tag) {
+    final newTags = List<String>.from(state.selectedTags)..remove(tag);
+    emit(state.copyWith(selectedTags: newTags));
+  }
+
+  void clearTags() {
+    emit(state.copyWith(clearTags: true));
+  }
+
+  void toggleFavorites() {
+    emit(state.copyWith(showOnlyFavorites: !state.showOnlyFavorites));
+  }
+
+  void setDateRange(DateRange? range) {
+    emit(state.copyWith(
+      dateRange: range,
+      clearDateRange: range == null,
+    ));
+  }
+
+  void clearAllFilters() {
+    emit(const FilterState(
+      sortOption: SortOption.dateAdded,
+      sortOrder: SortOrder.descending,
+      isGridView: true,
+    ));
+  }
+
+  /// Apply all filters and sorting to a list of clothing items
+  List<ClothingItem> applyFilters(List<ClothingItem> items) {
+    var filtered = List<ClothingItem>.from(items);
+
+    // Apply category filter
+    if (state.selectedCategory != null) {
+      filtered = filtered
+          .where((item) => item.category == state.selectedCategory)
+          .toList();
+    }
+
+    // Apply tag filters
+    if (state.selectedTags.isNotEmpty) {
+      filtered = filtered.where((item) {
+        if (item.tags == null || item.tags!.isEmpty) return false;
+        return state.selectedTags.every((tag) => item.tags!.any(
+            (itemTag) => itemTag.toLowerCase().contains(tag.toLowerCase())));
+      }).toList();
+    }
+
+    // Apply date range filter
+    if (state.dateRange != null) {
+      filtered = filtered
+          .where((item) =>
+              item.dateAdded.isAfter(state.dateRange!.startDate
+                  .subtract(const Duration(days: 1))) &&
+              item.dateAdded.isBefore(
+                  state.dateRange!.endDate.add(const Duration(days: 1))))
+          .toList();
+    }
+
+    // Apply sorting
+    filtered.sort((a, b) {
+      int comparison = 0;
+
+      switch (state.sortOption) {
+        case SortOption.dateAdded:
+          comparison = a.dateAdded.compareTo(b.dateAdded);
+          break;
+        case SortOption.category:
+          comparison = a.category.displayName.compareTo(b.category.displayName);
+          break;
+        case SortOption.name:
+          final aName = a.notes ?? a.category.displayName;
+          final bName = b.notes ?? b.category.displayName;
+          comparison = aName.compareTo(bName);
+          break;
+        case SortOption.recentlyUsed:
+          // For now, sort by date added as a proxy for recently used
+          comparison = a.dateAdded.compareTo(b.dateAdded);
+          break;
+      }
+
+      return state.sortOrder == SortOrder.ascending ? comparison : -comparison;
+    });
+
+    return filtered;
+  }
+
+  /// Get available tags from all items
+  List<String> getAvailableTags(List<ClothingItem> items) {
+    final tags = <String>{};
+    for (final item in items) {
+      if (item.tags != null) {
+        tags.addAll(item.tags!);
+      }
+    }
+    return tags.toList()..sort();
   }
 }

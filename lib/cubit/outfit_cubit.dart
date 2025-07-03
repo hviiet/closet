@@ -41,8 +41,7 @@ class OutfitState extends Equatable {
     );
   }
 
-  bool get canSaveOutfit =>
-      selectedItems.isNotEmpty && outfitName?.isNotEmpty == true;
+  bool get canSaveOutfit => selectedItems.isNotEmpty;
 
   @override
   List<Object?> get props => [
