@@ -4,6 +4,7 @@ import '../constants/app_theme.dart';
 import '../cubit/collection_cubit.dart';
 import '../models/models.dart';
 import 'add_collection_screen.dart';
+import 'collection_detail_screen.dart';
 
 class CollectionListScreen extends StatefulWidget {
   const CollectionListScreen({super.key});
@@ -141,7 +142,14 @@ class _CollectionListScreenState extends State<CollectionListScreen> {
                     ],
                   ),
                   onTap: () {
-                    // TODO: Navigate to collection details
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => CollectionDetailScreen(
+                          collection: collection,
+                        ),
+                      ),
+                    );
                   },
                 ),
               );
