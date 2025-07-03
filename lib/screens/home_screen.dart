@@ -10,6 +10,7 @@ import '../widgets/category_filter_chip.dart';
 import '../widgets/advanced_filter_bottom_sheet.dart';
 import 'add_item_screen.dart';
 import 'outfit_builder_screen.dart';
+import 'outfit_list_screen.dart';
 import 'trip_planner_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -148,11 +149,18 @@ class _HomeScreenState extends State<HomeScreen> {
           PopupMenuButton<String>(
             onSelected: (value) {
               switch (value) {
-                case 'outfits':
+                case 'create_outfit':
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                         builder: (context) => const OutfitBuilderScreen()),
+                  );
+                  break;
+                case 'my_outfits':
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const OutfitListScreen()),
                   );
                   break;
                 case 'trips':
@@ -166,12 +174,22 @@ class _HomeScreenState extends State<HomeScreen> {
             },
             itemBuilder: (context) => [
               const PopupMenuItem(
-                value: 'outfits',
+                value: 'create_outfit',
+                child: Row(
+                  children: [
+                    Icon(Icons.add_circle_outline),
+                    SizedBox(width: 8),
+                    Text('Create Outfit'),
+                  ],
+                ),
+              ),
+              const PopupMenuItem(
+                value: 'my_outfits',
                 child: Row(
                   children: [
                     Icon(Icons.style),
                     SizedBox(width: 8),
-                    Text('Outfits'),
+                    Text('My Outfits'),
                   ],
                 ),
               ),

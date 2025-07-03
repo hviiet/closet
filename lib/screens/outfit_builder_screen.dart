@@ -519,6 +519,9 @@ class _OutfitBuilderScreenState extends State<OutfitBuilderScreen>
         _nameController.clear();
         _notesController.clear();
         _tagsController.clear();
+
+        // Return success result
+        Navigator.pop(context, true);
       }
     } catch (e) {
       if (mounted) {

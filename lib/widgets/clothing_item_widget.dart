@@ -71,7 +71,7 @@ class ClothingItemWidget extends StatelessWidget {
   Widget _buildListItem(BuildContext context) {
     return Card(
       child: InkWell(
-        onTap: () => _showItemDetails(context),
+        onTap: handleOnTap ? () => _showItemDetails(context) : null,
         child: Padding(
           padding: const EdgeInsets.all(12.0),
           child: Row(
