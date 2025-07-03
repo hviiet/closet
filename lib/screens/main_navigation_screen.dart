@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'home_screen.dart';
 import 'outfit_list_screen.dart';
-import 'trip_planner_screen.dart';
+import 'collection_list_screen.dart';
 import 'settings_screen.dart';
 
 class MainNavigationScreen extends StatefulWidget {
@@ -32,8 +32,8 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
       label: 'Outfits',
     ),
     const BottomNavigationBarItem(
-      icon: Icon(Icons.travel_explore),
-      label: 'Trips',
+      icon: Icon(Icons.collections),
+      label: 'Collections',
     ),
     const BottomNavigationBarItem(
       icon: Icon(Icons.settings),
@@ -47,7 +47,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     _screens = [
       HomeScreen(onNavigateToTab: _changeTab),
       const OutfitListScreen(),
-      const TripPlannerScreen(),
+      const CollectionListScreen(),
       const SettingsScreen(),
     ];
   }

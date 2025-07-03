@@ -1,22 +1,22 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'trip.dart';
+part of 'collection.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator
 // **************************************************************************
 
-class TripAdapter extends TypeAdapter<Trip> {
+class CollectionAdapter extends TypeAdapter<Collection> {
   @override
   final int typeId = 2;
 
   @override
-  Trip read(BinaryReader reader) {
+  Collection read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return Trip(
+    return Collection(
       id: fields[0] as String,
       itemIds: (fields[1] as List).cast<String>(),
       outfitIds: (fields[2] as List).cast<String>(),
@@ -25,7 +25,7 @@ class TripAdapter extends TypeAdapter<Trip> {
   }
 
   @override
-  void write(BinaryWriter writer, Trip obj) {
+  void write(BinaryWriter writer, Collection obj) {
     writer
       ..writeByte(4)
       ..writeByte(0)
@@ -44,7 +44,7 @@ class TripAdapter extends TypeAdapter<Trip> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is TripAdapter &&
+      other is CollectionAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }
@@ -53,7 +53,8 @@ class TripAdapter extends TypeAdapter<Trip> {
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$TripImpl _$$TripImplFromJson(Map<String, dynamic> json) => _$TripImpl(
+_$CollectionImpl _$$CollectionImplFromJson(Map<String, dynamic> json) =>
+    _$CollectionImpl(
       id: json['id'] as String,
       itemIds:
           (json['itemIds'] as List<dynamic>).map((e) => e as String).toList(),
@@ -62,7 +63,7 @@ _$TripImpl _$$TripImplFromJson(Map<String, dynamic> json) => _$TripImpl(
       dateCreated: DateTime.parse(json['dateCreated'] as String),
     );
 
-Map<String, dynamic> _$$TripImplToJson(_$TripImpl instance) =>
+Map<String, dynamic> _$$CollectionImplToJson(_$CollectionImpl instance) =>
     <String, dynamic>{
       'id': instance.id,
       'itemIds': instance.itemIds,

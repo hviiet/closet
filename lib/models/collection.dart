@@ -1,18 +1,19 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hive/hive.dart';
 
-part 'trip.freezed.dart';
-part 'trip.g.dart';
+part 'collection.freezed.dart';
+part 'collection.g.dart';
 
 @freezed
 @HiveType(typeId: 2)
-class Trip with _$Trip {
-  const factory Trip({
+class Collection with _$Collection {
+  const factory Collection({
     @HiveField(0) required String id,
     @HiveField(1) required List<String> itemIds,
     @HiveField(2) required List<String> outfitIds,
     @HiveField(3) required DateTime dateCreated,
-  }) = _Trip;
+  }) = _Collection;
 
-  factory Trip.fromJson(Map<String, dynamic> json) => _$TripFromJson(json);
+  factory Collection.fromJson(Map<String, dynamic> json) =>
+      _$CollectionFromJson(json);
 }

@@ -5,16 +5,17 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'models/hive_adapters.dart';
 import 'models/clothing_item.dart';
 import 'models/outfit_set.dart';
-import 'models/trip.dart';
+import 'models/collection.dart';
 import 'repositories/hive_clothing_repository.dart';
 import 'repositories/hive_outfit_repository.dart';
-import 'repositories/hive_trip_repository.dart';
+import 'repositories/hive_collection_repository.dart';
 import 'services/file_storage_service.dart';
 import 'services/image_processing_service.dart';
 import 'bloc/clothing_bloc.dart';
 import 'bloc/clothing_event.dart';
 import 'cubit/filter_cubit.dart';
 import 'cubit/outfit_cubit.dart';
+import 'cubit/collection_cubit.dart';
 import 'cubit/theme_cubit.dart';
 import 'constants/app_theme.dart';
 import 'screens/main_navigation_screen.dart';
@@ -29,7 +30,7 @@ void main() async {
   Hive.registerAdapter(ClothingCategoryAdapter());
   Hive.registerAdapter(ClothingItemAdapter());
   Hive.registerAdapter(OutfitSetAdapter());
-  Hive.registerAdapter(TripAdapter());
+  Hive.registerAdapter(CollectionAdapter());
 
   runApp(const TClosetApp());
 }
@@ -55,8 +56,8 @@ class TClosetApp extends StatelessWidget {
         RepositoryProvider<HiveOutfitRepository>(
           create: (context) => HiveOutfitRepository(),
         ),
-        RepositoryProvider<HiveTripRepository>(
-          create: (context) => HiveTripRepository(),
+        RepositoryProvider<HiveCollectionRepository>(
+          create: (context) => HiveCollectionRepository(),
         ),
       ],
       child: MultiBlocProvider(
@@ -71,6 +72,11 @@ class TClosetApp extends StatelessWidget {
           ),
           BlocProvider<OutfitCubit>(
             create: (context) => OutfitCubit(),
+          ),
+          BlocProvider<CollectionCubit>(
+            create: (context) => CollectionCubit(
+              context.read<HiveCollectionRepository>(),
+            ),
           ),
           BlocProvider<ThemeCubit>(
             create: (context) => ThemeCubit(),
@@ -114,12 +120,12 @@ class _AppInitializerState extends State<AppInitializer> {
       // Store repositories before async operations
       final clothingRepo = context.read<HiveClothingRepository>();
       final outfitRepo = context.read<HiveOutfitRepository>();
-      final tripRepo = context.read<HiveTripRepository>();
+      final collectionRepo = context.read<HiveCollectionRepository>();
 
       // Initialize repositories
       await clothingRepo.init();
       await outfitRepo.init();
-      await tripRepo.init();
+      await collectionRepo.init();
 
       if (mounted) {
         setState(() {
