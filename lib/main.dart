@@ -15,6 +15,8 @@ import 'bloc/clothing_bloc.dart';
 import 'bloc/clothing_event.dart';
 import 'cubit/filter_cubit.dart';
 import 'cubit/outfit_cubit.dart';
+import 'cubit/theme_cubit.dart';
+import 'constants/app_theme.dart';
 import 'screens/main_navigation_screen.dart';
 
 void main() async {
@@ -70,14 +72,21 @@ class TClosetApp extends StatelessWidget {
           BlocProvider<OutfitCubit>(
             create: (context) => OutfitCubit(),
           ),
-        ],
-        child: MaterialApp(
-          title: 'TCloset',
-          theme: ThemeData(
-            colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-            useMaterial3: true,
+          BlocProvider<ThemeCubit>(
+            create: (context) => ThemeCubit(),
           ),
-          home: const AppInitializer(),
+        ],
+        child: BlocBuilder<ThemeCubit, bool>(
+          builder: (context, isDarkMode) {
+            return MaterialApp(
+              title: 'TCloset',
+              theme: lightTheme,
+              darkTheme: darkTheme,
+              themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
+              debugShowCheckedModeBanner: false,
+              home: const AppInitializer(),
+            );
+          },
         ),
       ),
     );

@@ -8,6 +8,7 @@ import '../bloc/clothing_state.dart';
 import '../cubit/outfit_cubit.dart';
 import '../widgets/clothing_item_widget.dart';
 import '../repositories/hive_outfit_repository.dart';
+import '../constants/app_theme.dart';
 
 class OutfitBuilderScreen extends StatefulWidget {
   const OutfitBuilderScreen({super.key});
@@ -45,7 +46,7 @@ class _OutfitBuilderScreenState extends State<OutfitBuilderScreen>
     return Scaffold(
       appBar: AppBar(
         title: const Text('Outfit Builder'),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        backgroundColor: context.theme.appBar,
         actions: [
           BlocBuilder<OutfitCubit, OutfitState>(
             builder: (context, outfitState) {
@@ -82,7 +83,7 @@ class _OutfitBuilderScreenState extends State<OutfitBuilderScreen>
                   Icon(
                     Icons.error_outline,
                     size: 64,
-                    color: Theme.of(context).colorScheme.error,
+                    color: context.theme.error,
                   ),
                   const SizedBox(height: 16),
                   Text('Error loading items: ${clothingState.errorMessage}'),
@@ -170,7 +171,7 @@ class _OutfitBuilderScreenState extends State<OutfitBuilderScreen>
                         children: [
                           Icon(
                             Icons.style,
-                            color: Theme.of(context).colorScheme.primary,
+                            color: context.theme.greenPrimary,
                           ),
                           const SizedBox(width: 8),
                           Text(
@@ -179,7 +180,7 @@ class _OutfitBuilderScreenState extends State<OutfitBuilderScreen>
                                 .textTheme
                                 .titleLarge
                                 ?.copyWith(
-                                  color: Theme.of(context).colorScheme.primary,
+                                  color: context.theme.greenPrimary,
                                 ),
                           ),
                         ],

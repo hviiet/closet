@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../constants/app_theme.dart';
 
 class TripPlannerScreen extends StatefulWidget {
   const TripPlannerScreen({super.key});
@@ -13,31 +14,34 @@ class _TripPlannerScreenState extends State<TripPlannerScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Trip Planner'),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        backgroundColor: context.theme.appBar,
       ),
-      body: const Center(
+      body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
               Icons.travel_explore,
               size: 64,
-              color: Colors.grey,
+              color: context.theme.grey,
             ),
-            SizedBox(height: 16),
-            Text(
+            const SizedBox(height: 16),
+            const Text(
               'Trip Planner',
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Text(
               'Plan and pack for your trips',
-              style: TextStyle(color: Colors.grey),
+              style: TextStyle(color: context.theme.grey),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Text(
               'Coming soon...',
-              style: TextStyle(fontStyle: FontStyle.italic),
+              style: TextStyle(
+                fontStyle: FontStyle.italic,
+                color: context.theme.grey,
+              ),
             ),
           ],
         ),

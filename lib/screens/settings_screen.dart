@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../cubit/theme_cubit.dart';
+import '../constants/app_theme.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -13,7 +16,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Settings'),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        backgroundColor: context.theme.appBar,
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
@@ -21,16 +24,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
           _buildSection(
             'General',
             [
-              _buildSettingsTile(
-                icon: Icons.dark_mode,
-                title: 'Theme',
-                subtitle: 'Dark mode',
-                trailing: Switch(
-                  value: false,
-                  onChanged: (value) {
-                    // TODO: Implement theme switching
-                  },
-                ),
+              BlocBuilder<ThemeCubit, bool>(
+                builder: (context, isDarkMode) {
+                  return _buildSettingsTile(
+                    icon: Icons.dark_mode,
+                    title: 'Theme',
+                    subtitle: isDarkMode ? 'Dark mode' : 'Light mode',
+                    trailing: Switch(
+                      value: isDarkMode,
+                      onChanged: (value) {
+                        context.read<ThemeCubit>().toggleTheme();
+                      },
+                      activeColor: context.theme.greenPrimary,
+                    ),
+                  );
+                },
               ),
               _buildSettingsTile(
                 icon: Icons.notifications,
@@ -109,12 +117,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
           child: Text(
             title,
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.primary,
+                  color: context.theme.greenPrimary,
                   fontWeight: FontWeight.bold,
                 ),
           ),
         ),
         Card(
+          color: context.theme.surface,
           child: Column(children: children),
         ),
       ],

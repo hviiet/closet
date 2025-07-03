@@ -5,6 +5,7 @@ import '../repositories/hive_outfit_repository.dart';
 import '../repositories/hive_clothing_repository.dart';
 import '../cubit/outfit_cubit.dart';
 import '../widgets/clothing_item_widget.dart';
+import '../constants/app_theme.dart';
 import 'outfit_builder_screen.dart';
 
 class OutfitListScreen extends StatefulWidget {
@@ -57,7 +58,7 @@ class _OutfitListScreenState extends State<OutfitListScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('My Outfits'),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        backgroundColor: context.theme.appBar,
         actions: [
           IconButton(
             onPressed: () async {
@@ -93,7 +94,7 @@ class _OutfitListScreenState extends State<OutfitListScreen> {
             Icon(
               Icons.error_outline,
               size: 64,
-              color: Theme.of(context).colorScheme.error,
+              color: context.theme.error,
             ),
             const SizedBox(height: 16),
             Text('Error loading outfits: $_errorMessage'),

@@ -7,6 +7,7 @@ import '../models/models.dart';
 import '../bloc/clothing_bloc.dart';
 import '../bloc/clothing_event.dart';
 import '../services/image_processing_service.dart';
+import '../constants/app_theme.dart';
 
 class AddItemScreen extends StatefulWidget {
   const AddItemScreen({super.key});
@@ -35,7 +36,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Add Clothing Item'),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        backgroundColor: context.theme.appBar,
         actions: [
           if (_selectedImage != null && !_isProcessing)
             TextButton(

@@ -8,6 +8,7 @@ import '../models/models.dart';
 import '../widgets/clothing_item_widget.dart';
 import '../widgets/category_filter_chip.dart';
 import '../widgets/advanced_filter_bottom_sheet.dart';
+import '../constants/app_theme.dart';
 import 'add_item_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -25,7 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('TCloset'),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        backgroundColor: context.theme.appBar,
         actions: [
           // Sort Button
           BlocBuilder<FilterCubit, FilterState>(
@@ -34,7 +35,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 icon: Icon(
                   Icons.sort,
                   color: filterState.sortOption != SortOption.dateAdded
-                      ? Theme.of(context).colorScheme.primary
+                      ? context.theme.greenPrimary
                       : null,
                 ),
                 onSelected: (SortOption value) {
@@ -113,7 +114,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 icon: Icon(
                   Icons.filter_list,
                   color: filterState.hasActiveFilters
-                      ? Theme.of(context).colorScheme.primary
+                      ? context.theme.greenPrimary
                       : null,
                 ),
                 onPressed: () {
