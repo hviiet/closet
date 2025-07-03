@@ -22,22 +22,31 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
 
   late final List<Widget> _screens;
 
-  final List<BottomNavigationBarItem> _navigationItems = [
-    const BottomNavigationBarItem(
-      icon: Icon(Icons.checkroom),
+  // Modern Navigation Destinations for Material Design 3
+  final List<NavigationDestination> _navigationDestinations = [
+    const NavigationDestination(
+      icon: Icon(Icons.checkroom_outlined),
+      selectedIcon: Icon(Icons.checkroom),
       label: 'Clothings',
+      tooltip: 'View your clothing items',
     ),
-    const BottomNavigationBarItem(
-      icon: Icon(Icons.style),
+    const NavigationDestination(
+      icon: Icon(Icons.style_outlined),
+      selectedIcon: Icon(Icons.style),
       label: 'Outfits',
+      tooltip: 'Manage your outfits',
     ),
-    const BottomNavigationBarItem(
-      icon: Icon(Icons.collections),
+    const NavigationDestination(
+      icon: Icon(Icons.collections_outlined),
+      selectedIcon: Icon(Icons.collections),
       label: 'Collections',
+      tooltip: 'Browse your collections',
     ),
-    const BottomNavigationBarItem(
-      icon: Icon(Icons.settings),
+    const NavigationDestination(
+      icon: Icon(Icons.settings_outlined),
+      selectedIcon: Icon(Icons.settings),
       label: 'Settings',
+      tooltip: 'App settings',
     ),
   ];
 
@@ -59,19 +68,15 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         index: _currentIndex,
         children: _screens,
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        currentIndex: _currentIndex,
-        onTap: (index) {
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: _currentIndex,
+        onDestinationSelected: (index) {
           setState(() {
             _currentIndex = index;
           });
         },
-        items: _navigationItems,
-        selectedItemColor: Theme.of(context).colorScheme.primary,
-        unselectedItemColor: Colors.grey,
-        backgroundColor: Theme.of(context).colorScheme.surface,
-        elevation: 8,
+        destinations: _navigationDestinations,
+        animationDuration: const Duration(milliseconds: 300),
       ),
     );
   }

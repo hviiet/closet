@@ -7,7 +7,6 @@ import '../cubit/filter_cubit.dart';
 import '../models/models.dart';
 import '../widgets/clothing_item_widget.dart';
 
-import '../constants/app_theme.dart';
 import 'add_item_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -19,276 +18,275 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
+  late AnimationController _fabAnimationController;
+  late Animation<double> _fabScaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _fabAnimationController = AnimationController(
+      duration: const Duration(milliseconds: 200),
+      vsync: this,
+    );
+    _fabScaleAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _fabAnimationController,
+      curve: Curves.easeInOut,
+    ));
+    _fabAnimationController.forward();
+  }
+
+  @override
+  void dispose() {
+    _fabAnimationController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('TCloset'),
-        backgroundColor: context.theme.appBar,
-        actions: [
-          // Sort Button
-          BlocBuilder<FilterCubit, FilterState>(
-            builder: (context, filterState) {
-              return PopupMenuButton<SortOption>(
-                icon: Icon(
-                  Icons.sort,
-                  color: filterState.sortOption != SortOption.dateAdded
-                      ? context.theme.greenPrimary
-                      : null,
+      body: CustomScrollView(
+        slivers: [
+          // Modern App Bar with enhanced styling
+          SliverAppBar.large(
+            title: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'TCloset',
+                  style: theme.textTheme.headlineMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    color: colorScheme.onSurface,
+                  ),
                 ),
-                onSelected: (SortOption value) {
-                  context.read<FilterCubit>().setSortOption(value);
-                },
-                itemBuilder: (context) => [
-                  PopupMenuItem(
-                    value: SortOption.dateAdded,
-                    child: Row(
-                      children: [
-                        Icon(
-                          filterState.sortOption == SortOption.dateAdded
-                              ? Icons.radio_button_checked
-                              : Icons.radio_button_unchecked,
-                        ),
-                        const SizedBox(width: 8),
-                        const Text('Date Added'),
-                      ],
-                    ),
+                Text(
+                  'Your Digital Wardrobe',
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
                   ),
-                  PopupMenuItem(
-                    value: SortOption.category,
-                    child: Row(
-                      children: [
-                        Icon(
-                          filterState.sortOption == SortOption.category
-                              ? Icons.radio_button_checked
-                              : Icons.radio_button_unchecked,
-                        ),
-                        const SizedBox(width: 8),
-                        const Text('Category'),
-                      ],
-                    ),
-                  ),
-                  const PopupMenuDivider(),
-                  PopupMenuItem(
-                    value: null,
-                    onTap: () {
-                      context.read<FilterCubit>().toggleSortOrder();
-                    },
-                    child: Row(
-                      children: [
-                        Icon(filterState.sortOrder == SortOrder.ascending
-                            ? Icons.arrow_upward
-                            : Icons.arrow_downward),
-                        const SizedBox(width: 8),
-                        Text(filterState.sortOrder == SortOrder.ascending
-                            ? 'Ascending'
-                            : 'Descending'),
-                      ],
-                    ),
-                  ),
-                ],
-              );
-            },
-          ),
-
-          // Advanced Filter Button
-          BlocBuilder<FilterCubit, FilterState>(
-            builder: (context, filterState) {
-              return IconButton(
-                icon: Icon(
-                  Icons.filter_list,
-                  color: filterState.hasActiveFilters
-                      ? context.theme.greenPrimary
-                      : null,
                 ),
-                onPressed: () {
-                  _showAdvancedFilters(context);
-                },
-              );
-            },
-          ),
-
-          // View Mode Toggle
-          BlocBuilder<FilterCubit, FilterState>(
-            builder: (context, filterState) {
-              return IconButton(
-                icon:
-                    Icon(filterState.isGridView ? Icons.grid_view : Icons.list),
-                onPressed: () {
-                  context.read<FilterCubit>().toggleViewMode();
-                },
-              );
-            },
-          ),
-        ],
-      ),
-      body: Column(
-        children: [
-          // Active Filters Display
-          BlocBuilder<FilterCubit, FilterState>(
-            builder: (context, filterState) {
-              if (!filterState.hasActiveFilters) return const SizedBox();
-
-              return Container(
-                width: double.infinity,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                child: Wrap(
-                  spacing: 8,
-                  runSpacing: 4,
-                  children: [
-                    if (filterState.selectedCategory != null)
-                      Chip(
-                        label: Text(
-                            'Category: ${filterState.selectedCategory!.displayName}'),
-                        onDeleted: () {
-                          context.read<FilterCubit>().setCategory(null);
-                        },
-                      ),
-                    ...filterState.selectedTags.map((tag) => Chip(
-                          label: Text('Tag: $tag'),
-                          onDeleted: () {
-                            context.read<FilterCubit>().removeTag(tag);
-                          },
-                        )),
-                    if (filterState.dateRange != null)
-                      Chip(
-                        label: Text(
-                            'Date Range: ${_formatDateRange(filterState.dateRange!)}'),
-                        onDeleted: () {
-                          context.read<FilterCubit>().setDateRange(null);
-                        },
-                      ),
-                    ActionChip(
-                      label: const Text('Clear All'),
+              ],
+            ),
+            backgroundColor: colorScheme.surface,
+            surfaceTintColor: colorScheme.surfaceTint,
+            expandedHeight: 120,
+            floating: false,
+            pinned: true,
+            snap: false,
+            elevation: 0,
+            scrolledUnderElevation: 1,
+            actions: [
+              // View Toggle Button
+              BlocBuilder<FilterCubit, FilterState>(
+                builder: (context, filterState) {
+                  return Container(
+                    margin: const EdgeInsets.only(right: 8),
+                    decoration: BoxDecoration(
+                      color: colorScheme.surfaceContainerHighest,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: IconButton(
                       onPressed: () {
-                        context.read<FilterCubit>().clearAllFilters();
+                        context.read<FilterCubit>().toggleViewMode();
                       },
+                      icon: Icon(
+                        filterState.isGridView
+                            ? Icons.view_list_outlined
+                            : Icons.grid_view_outlined,
+                      ),
+                      tooltip: filterState.isGridView
+                          ? 'Switch to List View'
+                          : 'Switch to Grid View',
+                      style: IconButton.styleFrom(
+                        foregroundColor: colorScheme.onSurfaceVariant,
+                      ),
                     ),
-                  ],
-                ),
-              );
-            },
-          ),
+                  );
+                },
+              ),
 
-          const Divider(height: 1),
-
-          // Clothing Items List/Grid
-          Expanded(
-            child: BlocBuilder<ClothingBloc, ClothingState>(
-              builder: (context, clothingState) {
-                if (clothingState.status == ClothingStatus.loading) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-
-                if (clothingState.status == ClothingStatus.failure) {
-                  return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.error_outline,
-                          size: 64,
-                          color: Theme.of(context).colorScheme.error,
+              // Sort Menu Button
+              BlocBuilder<FilterCubit, FilterState>(
+                builder: (context, filterState) {
+                  return Container(
+                    margin: const EdgeInsets.only(right: 8),
+                    decoration: BoxDecoration(
+                      color: filterState.sortOption != SortOption.dateAdded
+                          ? colorScheme.primaryContainer
+                          : colorScheme.surfaceContainerHighest,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: PopupMenuButton<SortOption>(
+                      icon: Icon(
+                        Icons.sort_outlined,
+                        color: filterState.sortOption != SortOption.dateAdded
+                            ? colorScheme.onPrimaryContainer
+                            : colorScheme.onSurfaceVariant,
+                      ),
+                      tooltip: 'Sort Options',
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      elevation: 3,
+                      onSelected: (SortOption value) {
+                        context.read<FilterCubit>().setSortOption(value);
+                      },
+                      itemBuilder: (context) => [
+                        _buildSortMenuItem(
+                          context,
+                          SortOption.dateAdded,
+                          'Date Added',
+                          Icons.schedule_outlined,
+                          filterState.sortOption,
                         ),
-                        const SizedBox(height: 16),
-                        Text(
-                          'Error: ${clothingState.errorMessage}',
-                          textAlign: TextAlign.center,
-                          style: Theme.of(context).textTheme.bodyLarge,
-                        ),
-                        const SizedBox(height: 16),
-                        ElevatedButton(
-                          onPressed: () {
-                            context
-                                .read<ClothingBloc>()
-                                .add(LoadClothingItems());
-                          },
-                          child: const Text('Retry'),
+                        _buildSortMenuItem(
+                          context,
+                          SortOption.category,
+                          'Category',
+                          Icons.category_outlined,
+                          filterState.sortOption,
                         ),
                       ],
                     ),
                   );
+                },
+              ),
+
+              // Filter Menu Button
+              BlocBuilder<FilterCubit, FilterState>(
+                builder: (context, filterState) {
+                  return Container(
+                    margin: const EdgeInsets.only(right: 16),
+                    decoration: BoxDecoration(
+                      color: filterState.hasActiveFilters
+                          ? colorScheme.primaryContainer
+                          : colorScheme.surfaceContainerHighest,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: IconButton(
+                      onPressed: () => _showCategoryFilter(context),
+                      icon: Icon(
+                        Icons.filter_list_outlined,
+                        color: filterState.hasActiveFilters
+                            ? colorScheme.onPrimaryContainer
+                            : colorScheme.onSurfaceVariant,
+                      ),
+                      tooltip: 'Filter by Category',
+                      style: IconButton.styleFrom(
+                        foregroundColor: filterState.hasActiveFilters
+                            ? colorScheme.onPrimaryContainer
+                            : colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
+
+          // Enhanced Filter Chips Section
+          SliverToBoxAdapter(
+            child: BlocBuilder<FilterCubit, FilterState>(
+              builder: (context, filterState) {
+                if (!filterState.hasActiveFilters) {
+                  return const SizedBox.shrink();
+                }
+
+                return Container(
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.filter_alt_outlined,
+                            size: 16,
+                            color: colorScheme.onSurfaceVariant,
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            'Active Filters',
+                            style: theme.textTheme.labelMedium?.copyWith(
+                              color: colorScheme.onSurfaceVariant,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          const Spacer(),
+                          TextButton.icon(
+                            onPressed: () {
+                              context.read<FilterCubit>().clearAllFilters();
+                            },
+                            icon: Icon(
+                              Icons.clear_all,
+                              size: 16,
+                              color: colorScheme.primary,
+                            ),
+                            label: Text(
+                              'Clear All',
+                              style: TextStyle(color: colorScheme.primary),
+                            ),
+                            style: TextButton.styleFrom(
+                              minimumSize: Size.zero,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 4,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 4,
+                        children: [
+                          if (filterState.selectedCategory != null)
+                            _buildFilterChip(
+                              context,
+                              filterState.selectedCategory!.displayName,
+                              Icons.category_outlined,
+                              () =>
+                                  context.read<FilterCubit>().setCategory(null),
+                            ),
+                        ],
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
+
+          // Enhanced Content Section
+          SliverToBoxAdapter(
+            child: BlocBuilder<ClothingBloc, ClothingState>(
+              builder: (context, clothingState) {
+                if (clothingState.status == ClothingStatus.loading) {
+                  return _buildLoadingState(context);
+                }
+
+                if (clothingState.status == ClothingStatus.failure) {
+                  return _buildErrorState(context, clothingState.errorMessage);
                 }
 
                 return BlocBuilder<FilterCubit, FilterState>(
                   builder: (context, filterState) {
-                    // Apply enhanced filtering
                     final filteredItems = context
                         .read<FilterCubit>()
                         .applyFilters(clothingState.items);
 
                     if (filteredItems.isEmpty) {
-                      return Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.checkroom_outlined,
-                              size: 64,
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .onSurfaceVariant,
-                            ),
-                            const SizedBox(height: 16),
-                            Text(
-                              filterState.hasActiveFilters
-                                  ? 'No items match your filters'
-                                  : 'No clothing items yet',
-                              style: Theme.of(context).textTheme.bodyLarge,
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              filterState.hasActiveFilters
-                                  ? 'Try adjusting your filters'
-                                  : 'Add your first clothing item!',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyMedium
-                                  ?.copyWith(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onSurfaceVariant,
-                                  ),
-                            ),
-                          ],
-                        ),
-                      );
+                      return _buildEmptyState(context, filterState);
                     }
 
-                    if (filterState.isGridView) {
-                      return GridView.builder(
-                        padding: const EdgeInsets.all(16),
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          crossAxisSpacing: 16,
-                          mainAxisSpacing: 16,
-                          childAspectRatio: 0.8,
-                        ),
-                        itemCount: filteredItems.length,
-                        itemBuilder: (context, index) {
-                          return ClothingItemWidget(
-                            item: filteredItems[index],
-                            isGridView: true,
-                          );
-                        },
-                      );
-                    } else {
-                      return ListView.separated(
-                        padding: const EdgeInsets.all(16),
-                        itemCount: filteredItems.length,
-                        separatorBuilder: (context, index) =>
-                            const SizedBox(height: 12),
-                        itemBuilder: (context, index) {
-                          return ClothingItemWidget(
-                            item: filteredItems[index],
-                            isGridView: false,
-                          );
-                        },
-                      );
-                    }
+                    return _buildItemsGrid(context, filteredItems, filterState);
                   },
                 );
               },
@@ -296,112 +294,529 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          final result = await Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const AddItemScreen()),
-          );
-          if (result == true) {
-            // Refresh the list if item was added
-            if (context.mounted) {
-              context.read<ClothingBloc>().add(LoadClothingItems());
+
+      // Modern Floating Action Button
+      floatingActionButton: ScaleTransition(
+        scale: _fabScaleAnimation,
+        child: FloatingActionButton.extended(
+          onPressed: () async {
+            final result = await Navigator.push(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (context, animation, secondaryAnimation) =>
+                    const AddItemScreen(),
+                transitionsBuilder:
+                    (context, animation, secondaryAnimation, child) {
+                  return SlideTransition(
+                    position: Tween<Offset>(
+                      begin: const Offset(0.0, 1.0),
+                      end: Offset.zero,
+                    ).animate(CurvedAnimation(
+                      parent: animation,
+                      curve: Curves.easeInOut,
+                    )),
+                    child: child,
+                  );
+                },
+              ),
+            );
+            if (result == true) {
+              if (context.mounted) {
+                context.read<ClothingBloc>().add(LoadClothingItems());
+              }
             }
-          }
-        },
-        child: const Icon(Icons.add),
+          },
+          icon: const Icon(Icons.add),
+          label: const Text('Add Item'),
+          elevation: 3,
+          highlightElevation: 6,
+        ),
       ),
     );
   }
 
-  void _showAdvancedFilters(BuildContext context) {
+  PopupMenuItem<SortOption> _buildSortMenuItem(
+    BuildContext context,
+    SortOption value,
+    String label,
+    IconData icon,
+    SortOption currentSort,
+  ) {
+    final theme = Theme.of(context);
+    final isSelected = currentSort == value;
+
+    return PopupMenuItem(
+      value: value,
+      child: Container(
+        decoration: BoxDecoration(
+          color: isSelected
+              ? theme.colorScheme.primaryContainer.withOpacity(0.3)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        child: Row(
+          children: [
+            Icon(
+              isSelected
+                  ? Icons.radio_button_checked
+                  : Icons.radio_button_unchecked,
+              color: isSelected
+                  ? theme.colorScheme.primary
+                  : theme.colorScheme.onSurfaceVariant,
+              size: 20,
+            ),
+            const SizedBox(width: 12),
+            Icon(
+              icon,
+              size: 18,
+              color: isSelected
+                  ? theme.colorScheme.primary
+                  : theme.colorScheme.onSurfaceVariant,
+            ),
+            const SizedBox(width: 8),
+            Text(
+              label,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: isSelected
+                    ? theme.colorScheme.primary
+                    : theme.colorScheme.onSurface,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFilterChip(
+    BuildContext context,
+    String label,
+    IconData icon,
+    VoidCallback onDeleted,
+  ) {
+    final theme = Theme.of(context);
+
+    return Chip(
+      avatar: Icon(
+        icon,
+        size: 16,
+        color: theme.colorScheme.onPrimaryContainer,
+      ),
+      label: Text(
+        label,
+        style: theme.textTheme.labelMedium?.copyWith(
+          color: theme.colorScheme.onPrimaryContainer,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+      deleteIcon: Icon(
+        Icons.close,
+        size: 16,
+        color: theme.colorScheme.onPrimaryContainer,
+      ),
+      onDeleted: onDeleted,
+      backgroundColor: theme.colorScheme.primaryContainer,
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+    );
+  }
+
+  Widget _buildLoadingState(BuildContext context) {
+    return SizedBox(
+      height: 400,
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CircularProgressIndicator(
+              strokeWidth: 3,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Loading your wardrobe...',
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildErrorState(BuildContext context, String? errorMessage) {
+    final theme = Theme.of(context);
+
+    return Container(
+      height: 400,
+      padding: const EdgeInsets.all(32),
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.errorContainer.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Icon(
+                Icons.error_outline,
+                size: 48,
+                color: theme.colorScheme.error,
+              ),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              'Oops! Something went wrong',
+              style: theme.textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              errorMessage ?? 'An unexpected error occurred',
+              textAlign: TextAlign.center,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+            const SizedBox(height: 24),
+            FilledButton.icon(
+              onPressed: () {
+                context.read<ClothingBloc>().add(LoadClothingItems());
+              },
+              icon: const Icon(Icons.refresh),
+              label: const Text('Try Again'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEmptyState(BuildContext context, FilterState filterState) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return Container(
+      height: 400,
+      padding: const EdgeInsets.all(32),
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: colorScheme.primaryContainer.withOpacity(0.3),
+                borderRadius: BorderRadius.circular(24),
+              ),
+              child: Icon(
+                filterState.hasActiveFilters
+                    ? Icons.search_off_outlined
+                    : Icons.checkroom_outlined,
+                size: 48,
+                color: colorScheme.primary,
+              ),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              filterState.hasActiveFilters
+                  ? 'No items match your filters'
+                  : 'Your wardrobe is empty',
+              style: theme.textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              filterState.hasActiveFilters
+                  ? 'Try adjusting your search criteria or add new items to your wardrobe'
+                  : 'Start building your digital closet by adding your first clothing item',
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: colorScheme.onSurfaceVariant,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 24),
+            if (filterState.hasActiveFilters)
+              OutlinedButton.icon(
+                onPressed: () {
+                  context.read<FilterCubit>().clearAllFilters();
+                },
+                icon: const Icon(Icons.clear_all),
+                label: const Text('Clear Filters'),
+              )
+            else
+              FilledButton.icon(
+                onPressed: () async {
+                  final result = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const AddItemScreen(),
+                    ),
+                  );
+                  if (result == true && context.mounted) {
+                    context.read<ClothingBloc>().add(LoadClothingItems());
+                  }
+                },
+                icon: const Icon(Icons.add),
+                label: const Text('Add First Item'),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildItemsGrid(
+    BuildContext context,
+    List<ClothingItem> items,
+    FilterState filterState,
+  ) {
+    if (filterState.isGridView) {
+      return Container(
+        padding: const EdgeInsets.all(16),
+        child: GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: 12,
+            mainAxisSpacing: 12,
+            childAspectRatio: 0.75,
+          ),
+          itemCount: items.length,
+          itemBuilder: (context, index) {
+            return ClothingItemWidget(
+              item: items[index],
+              isGridView: true,
+            );
+          },
+        ),
+      );
+    } else {
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        child: ListView.separated(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: items.length,
+          separatorBuilder: (context, index) => const SizedBox(height: 8),
+          itemBuilder: (context, index) {
+            return ClothingItemWidget(
+              item: items[index],
+              isGridView: false,
+            );
+          },
+        ),
+      );
+    }
+  }
+
+  void _showCategoryFilter(BuildContext context) {
+    final theme = Theme.of(context);
+
     showModalBottomSheet(
       context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height * 0.7,
+        ),
+        decoration: BoxDecoration(
+          color: theme.colorScheme.surface,
+          borderRadius: const BorderRadius.vertical(
+            top: Radius.circular(28),
+          ),
+        ),
+        child: const _CategorySelectionBottomSheet(),
       ),
-      builder: (context) => _CategorySelectionBottomSheet(),
     );
   }
+}
 
-  String _formatDateRange(DateRange range) {
-    final start = '${range.startDate.day}/${range.startDate.month}';
-    final end = '${range.endDate.day}/${range.endDate.month}';
-    return '$start - $end';
-  }
+class _CategorySelectionBottomSheet extends StatelessWidget {
+  const _CategorySelectionBottomSheet();
 
-  Widget _CategorySelectionBottomSheet() {
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return BlocBuilder<FilterCubit, FilterState>(
       builder: (context, filterState) {
-        return Container(
-          constraints: BoxConstraints(
-            maxHeight: MediaQuery.of(context).size.height * 0.7,
-          ),
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Handle bar
+            Container(
+              margin: const EdgeInsets.only(top: 12),
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: colorScheme.onSurfaceVariant.withOpacity(0.4),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+
+            // Header
+            Container(
+              padding: const EdgeInsets.fromLTRB(24, 20, 16, 16),
+              child: Row(
                 children: [
-                  Text(
-                    'Select Category',
-                    style: Theme.of(context).textTheme.headlineSmall,
+                  Icon(
+                    Icons.filter_list_outlined,
+                    color: colorScheme.primary,
                   ),
-                  const Spacer(),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      'Filter by Category',
+                      style: theme.textTheme.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
                   IconButton(
                     onPressed: () => Navigator.of(context).pop(),
                     icon: const Icon(Icons.close),
+                    style: IconButton.styleFrom(
+                      backgroundColor: colorScheme.surfaceContainerHighest,
+                    ),
                   ),
                 ],
               ),
-              const SizedBox(height: 20),
-              Flexible(
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      // All Categories option
-                      ListTile(
-                        title: const Text('All'),
-                        leading: Radio<ClothingCategory?>(
-                          value: null,
-                          groupValue: filterState.selectedCategory,
-                          onChanged: (ClothingCategory? value) {
-                            context.read<FilterCubit>().setCategory(value);
-                            Navigator.of(context).pop();
-                          },
-                        ),
-                        onTap: () {
-                          context.read<FilterCubit>().setCategory(null);
-                          Navigator.of(context).pop();
-                        },
-                      ),
+            ),
 
-                      // Individual category options
-                      ...ClothingCategory.values.map((category) => ListTile(
-                            title: Text(category.displayName),
-                            leading: Radio<ClothingCategory?>(
-                              value: category,
-                              groupValue: filterState.selectedCategory,
-                              onChanged: (ClothingCategory? value) {
-                                context.read<FilterCubit>().setCategory(value);
-                                Navigator.of(context).pop();
-                              },
-                            ),
-                            onTap: () {
-                              context.read<FilterCubit>().setCategory(category);
-                              Navigator.of(context).pop();
-                            },
-                          )),
-                    ],
-                  ),
+            // Categories List
+            Flexible(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Column(
+                  children: [
+                    // All Categories option
+                    _buildCategoryTile(
+                      context,
+                      null,
+                      'All Categories',
+                      Icons.all_inclusive,
+                      filterState.selectedCategory,
+                    ),
+
+                    const SizedBox(height: 8),
+
+                    // Individual category options
+                    ...ClothingCategory.values
+                        .map((category) => _buildCategoryTile(
+                              context,
+                              category,
+                              category.displayName,
+                              _getCategoryIcon(category),
+                              filterState.selectedCategory,
+                            )),
+                  ],
                 ),
               ),
-              const SizedBox(height: 20),
-            ],
-          ),
+            ),
+
+            const SizedBox(height: 24),
+          ],
         );
       },
     );
+  }
+
+  Widget _buildCategoryTile(
+    BuildContext context,
+    ClothingCategory? category,
+    String title,
+    IconData icon,
+    ClothingCategory? selectedCategory,
+  ) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final isSelected = selectedCategory == category;
+
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 2),
+      decoration: BoxDecoration(
+        color: isSelected
+            ? colorScheme.primaryContainer.withOpacity(0.3)
+            : Colors.transparent,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: ListTile(
+        leading: Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: isSelected
+                ? colorScheme.primaryContainer
+                : colorScheme.surfaceContainerHighest,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Icon(
+            icon,
+            color: isSelected
+                ? colorScheme.onPrimaryContainer
+                : colorScheme.onSurfaceVariant,
+            size: 20,
+          ),
+        ),
+        title: Text(
+          title,
+          style: theme.textTheme.bodyLarge?.copyWith(
+            fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+            color: isSelected ? colorScheme.primary : colorScheme.onSurface,
+          ),
+        ),
+        trailing: Radio<ClothingCategory?>(
+          value: category,
+          groupValue: selectedCategory,
+          onChanged: (ClothingCategory? value) {
+            context.read<FilterCubit>().setCategory(value);
+            Navigator.of(context).pop();
+          },
+          activeColor: colorScheme.primary,
+        ),
+        onTap: () {
+          context.read<FilterCubit>().setCategory(category);
+          Navigator.of(context).pop();
+        },
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+      ),
+    );
+  }
+
+  IconData _getCategoryIcon(ClothingCategory category) {
+    switch (category) {
+      case ClothingCategory.tops:
+        return Icons.vertical_align_top;
+      case ClothingCategory.bottoms:
+        return Icons.vertical_align_bottom;
+      case ClothingCategory.outerwear:
+        return Icons.checkroom;
+      case ClothingCategory.shoes:
+        return Icons.sports_martial_arts;
+      case ClothingCategory.accessories:
+        return Icons.watch;
+      case ClothingCategory.underwear:
+        return Icons.style;
+      case ClothingCategory.sleepwear:
+        return Icons.bedtime;
+      case ClothingCategory.sportswear:
+        return Icons.fitness_center;
+    }
   }
 }

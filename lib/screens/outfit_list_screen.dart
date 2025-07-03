@@ -241,14 +241,14 @@ class _OutfitListScreenState extends State<OutfitListScreen> {
               // Outfit items preview
               if (outfitItems.isNotEmpty) ...[
                 SizedBox(
-                  height: 80,
+                  height: 180,
                   child: ListView.builder(
                     scrollDirection: Axis.horizontal,
                     itemCount: outfitItems.length,
                     itemBuilder: (context, index) {
                       return Container(
-                        width: 80,
-                        margin: const EdgeInsets.only(right: 8),
+                        width: 140,
+                        margin: const EdgeInsets.only(right: 12),
                         child: ClothingItemWidget(
                           item: outfitItems[index],
                           isGridView: true,
@@ -260,7 +260,7 @@ class _OutfitListScreenState extends State<OutfitListScreen> {
                 ),
               ] else ...[
                 Container(
-                  height: 80,
+                  height: 120,
                   decoration: BoxDecoration(
                     color: Colors.grey[100],
                     borderRadius: BorderRadius.circular(8),
@@ -286,7 +286,7 @@ class _OutfitListScreenState extends State<OutfitListScreen> {
                           backgroundColor: Theme.of(context)
                               .colorScheme
                               .primary
-                              .withOpacity(0.1),
+                              .withValues(alpha: 0.1),
                           side: BorderSide.none,
                         ),
                       )
@@ -336,12 +336,12 @@ class _OutfitListScreenState extends State<OutfitListScreen> {
                 ),
                 const SizedBox(height: 8),
                 Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
+                  spacing: 12,
+                  runSpacing: 12,
                   children: items.map((item) {
                     return SizedBox(
-                      width: 80,
-                      height: 100,
+                      width: 100,
+                      height: 120,
                       child: ClothingItemWidget(
                         item: item,
                         isGridView: true,
@@ -367,7 +367,7 @@ class _OutfitListScreenState extends State<OutfitListScreen> {
                           backgroundColor: Theme.of(context)
                               .colorScheme
                               .primary
-                              .withOpacity(0.1),
+                              .withValues(alpha: 0.1),
                         ),
                       )
                       .toList(),
