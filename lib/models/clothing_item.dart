@@ -13,8 +13,6 @@ class ClothingItem with _$ClothingItem {
     @HiveField(1) required String imagePath,
     @HiveField(2) required ClothingCategory category,
     @HiveField(3) required DateTime dateAdded,
-    @HiveField(4) String? notes,
-    @HiveField(5) List<String>? tags,
   }) = _ClothingItem;
 
   factory ClothingItem.fromJson(Map<String, dynamic> json) =>

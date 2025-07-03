@@ -21,15 +21,13 @@ class ClothingItemAdapter extends TypeAdapter<ClothingItem> {
       imagePath: fields[1] as String,
       category: fields[2] as ClothingCategory,
       dateAdded: fields[3] as DateTime,
-      notes: fields[4] as String?,
-      tags: (fields[5] as List?)?.cast<String>(),
     );
   }
 
   @override
   void write(BinaryWriter writer, ClothingItem obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(4)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -37,11 +35,7 @@ class ClothingItemAdapter extends TypeAdapter<ClothingItem> {
       ..writeByte(2)
       ..write(obj.category)
       ..writeByte(3)
-      ..write(obj.dateAdded)
-      ..writeByte(4)
-      ..write(obj.notes)
-      ..writeByte(5)
-      ..write(obj.tags);
+      ..write(obj.dateAdded);
   }
 
   @override
@@ -65,8 +59,6 @@ _$ClothingItemImpl _$$ClothingItemImplFromJson(Map<String, dynamic> json) =>
       imagePath: json['imagePath'] as String,
       category: $enumDecode(_$ClothingCategoryEnumMap, json['category']),
       dateAdded: DateTime.parse(json['dateAdded'] as String),
-      notes: json['notes'] as String?,
-      tags: (json['tags'] as List<dynamic>?)?.map((e) => e as String).toList(),
     );
 
 Map<String, dynamic> _$$ClothingItemImplToJson(_$ClothingItemImpl instance) =>
@@ -75,8 +67,6 @@ Map<String, dynamic> _$$ClothingItemImplToJson(_$ClothingItemImpl instance) =>
       'imagePath': instance.imagePath,
       'category': _$ClothingCategoryEnumMap[instance.category]!,
       'dateAdded': instance.dateAdded.toIso8601String(),
-      'notes': instance.notes,
-      'tags': instance.tags,
     };
 
 const _$ClothingCategoryEnumMap = {

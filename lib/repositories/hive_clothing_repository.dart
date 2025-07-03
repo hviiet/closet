@@ -48,12 +48,7 @@ class HiveClothingRepository implements ClothingRepository {
     final lowercaseQuery = query.toLowerCase();
     return _box.values
         .where((item) =>
-            item.notes?.toLowerCase().contains(lowercaseQuery) == true ||
-            item.tags?.any(
-                    (tag) => tag.toLowerCase().contains(lowercaseQuery)) ==
-                true ||
             item.category.displayName.toLowerCase().contains(lowercaseQuery))
-        .toList()
-      ..sort((a, b) => b.dateAdded.compareTo(a.dateAdded));
+        .toList();
   }
 }

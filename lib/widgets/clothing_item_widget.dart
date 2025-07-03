@@ -45,20 +45,19 @@ class ClothingItemWidget extends StatelessWidget {
                 children: [
                   Text(
                     item.category.displayName,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Theme.of(context).colorScheme.primary,
-                          fontWeight: FontWeight.w500,
-                        ),
-                  ),
-                  if (item.notes?.isNotEmpty == true) ...[
-                    const SizedBox(height: 4),
-                    Text(
-                      item.notes!,
-                      style: Theme.of(context).textTheme.bodySmall,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
                     ),
-                  ],
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Added ${_formatDate(item.dateAdded)}',
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      fontSize: 12,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -91,27 +90,18 @@ class ClothingItemWidget extends StatelessWidget {
                   children: [
                     Text(
                       item.category.displayName,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            color: Theme.of(context).colorScheme.primary,
-                            fontWeight: FontWeight.w500,
-                          ),
-                    ),
-                    if (item.notes?.isNotEmpty == true) ...[
-                      const SizedBox(height: 4),
-                      Text(
-                        item.notes!,
-                        style: Theme.of(context).textTheme.bodyMedium,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
                       ),
-                    ],
+                    ),
                     const SizedBox(height: 4),
                     Text(
-                      _formatDate(item.dateAdded),
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color:
-                                Theme.of(context).colorScheme.onSurfaceVariant,
-                          ),
+                      'Added ${_formatDate(item.dateAdded)}',
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        fontSize: 10,
+                      ),
                     ),
                   ],
                 ),
@@ -200,24 +190,17 @@ class ClothingItemWidget extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            Text('Added: ${_formatDate(item.dateAdded)}'),
-            if (item.notes?.isNotEmpty == true) ...[
-              const SizedBox(height: 8),
-              Text('Notes: ${item.notes}'),
-            ],
-            if (item.tags?.isNotEmpty == true) ...[
-              const SizedBox(height: 8),
-              Wrap(
-                spacing: 4,
-                children: item.tags!
-                    .map((tag) => Chip(
-                          label: Text(tag),
-                          materialTapTargetSize:
-                              MaterialTapTargetSize.shrinkWrap,
-                        ))
-                    .toList(),
-              ),
-            ],
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Category: ${item.category.displayName}',
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 8),
+                Text('Added: ${_formatDate(item.dateAdded)}'),
+              ],
+            ),
           ],
         ),
         actions: [

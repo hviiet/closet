@@ -13,7 +13,7 @@ class HiveTripRepository implements TripRepository {
   @override
   Future<List<Trip>> getAllTrips() async {
     return _box.values.toList()
-      ..sort((a, b) => b.startDate.compareTo(a.startDate));
+      ..sort((a, b) => b.dateCreated.compareTo(a.dateCreated));
   }
 
   @override
@@ -40,11 +40,8 @@ class HiveTripRepository implements TripRepository {
   Future<List<Trip>> searchTrips(String query) async {
     final lowercaseQuery = query.toLowerCase();
     return _box.values
-        .where((trip) =>
-            trip.name.toLowerCase().contains(lowercaseQuery) ||
-            trip.destination?.toLowerCase().contains(lowercaseQuery) == true ||
-            trip.notes?.toLowerCase().contains(lowercaseQuery) == true)
+        .where((trip) => trip.id.toLowerCase().contains(lowercaseQuery))
         .toList()
-      ..sort((a, b) => b.startDate.compareTo(a.startDate));
+      ..sort((a, b) => b.dateCreated.compareTo(a.dateCreated));
   }
 }

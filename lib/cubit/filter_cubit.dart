@@ -2,7 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import '../models/models.dart';
 
-enum SortOption { dateAdded, category, name, recentlyUsed }
+enum SortOption { dateAdded, category, recentlyUsed }
 
 enum SortOrder { ascending, descending }
 
@@ -14,6 +14,7 @@ class FilterState extends Equatable {
   final List<String> selectedTags;
   final bool showOnlyFavorites;
   final DateRange? dateRange;
+  final String searchQuery;
 
   const FilterState({
     this.selectedCategory,
@@ -23,6 +24,7 @@ class FilterState extends Equatable {
     this.selectedTags = const [],
     this.showOnlyFavorites = false,
     this.dateRange,
+    this.searchQuery = '',
   });
 
   FilterState copyWith({
@@ -36,6 +38,7 @@ class FilterState extends Equatable {
     bool clearCategory = false,
     bool clearTags = false,
     bool clearDateRange = false,
+    String? searchQuery,
   }) {
     return FilterState(
       selectedCategory:
@@ -46,6 +49,7 @@ class FilterState extends Equatable {
       selectedTags: clearTags ? [] : (selectedTags ?? this.selectedTags),
       showOnlyFavorites: showOnlyFavorites ?? this.showOnlyFavorites,
       dateRange: clearDateRange ? null : (dateRange ?? this.dateRange),
+      searchQuery: searchQuery ?? this.searchQuery,
     );
   }
 
@@ -53,7 +57,8 @@ class FilterState extends Equatable {
       selectedCategory != null ||
       selectedTags.isNotEmpty ||
       showOnlyFavorites ||
-      dateRange != null;
+      dateRange != null ||
+      searchQuery.isNotEmpty;
 
   @override
   List<Object?> get props => [
@@ -64,6 +69,7 @@ class FilterState extends Equatable {
         selectedTags,
         showOnlyFavorites,
         dateRange,
+        searchQuery,
       ];
 }
 
@@ -152,15 +158,6 @@ class FilterCubit extends Cubit<FilterState> {
           .toList();
     }
 
-    // Apply tag filters
-    if (state.selectedTags.isNotEmpty) {
-      filtered = filtered.where((item) {
-        if (item.tags == null || item.tags!.isEmpty) return false;
-        return state.selectedTags.every((tag) => item.tags!.any(
-            (itemTag) => itemTag.toLowerCase().contains(tag.toLowerCase())));
-      }).toList();
-    }
-
     // Apply date range filter
     if (state.dateRange != null) {
       filtered = filtered
@@ -183,11 +180,6 @@ class FilterCubit extends Cubit<FilterState> {
         case SortOption.category:
           comparison = a.category.displayName.compareTo(b.category.displayName);
           break;
-        case SortOption.name:
-          final aName = a.notes ?? a.category.displayName;
-          final bName = b.notes ?? b.category.displayName;
-          comparison = aName.compareTo(bName);
-          break;
         case SortOption.recentlyUsed:
           // For now, sort by date added as a proxy for recently used
           comparison = a.dateAdded.compareTo(b.dateAdded);
@@ -201,13 +193,8 @@ class FilterCubit extends Cubit<FilterState> {
   }
 
   /// Get available tags from all items
-  List<String> getAvailableTags(List<ClothingItem> items) {
-    final tags = <String>{};
-    for (final item in items) {
-      if (item.tags != null) {
-        tags.addAll(item.tags!);
-      }
-    }
-    return tags.toList()..sort();
+  Set<String> getAvailableTags(List<ClothingItem> items) {
+    // Return empty set since tags field was removed
+    return <String>{};
   }
 }

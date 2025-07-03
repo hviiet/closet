@@ -17,19 +17,10 @@ class AddItemScreen extends StatefulWidget {
 }
 
 class _AddItemScreenState extends State<AddItemScreen> {
-  final _notesController = TextEditingController();
-  final _tagsController = TextEditingController();
   ClothingCategory _selectedCategory = ClothingCategory.tops;
   File? _selectedImage;
   bool _isProcessing = false;
   final _uuid = const Uuid();
-
-  @override
-  void dispose() {
-    _notesController.dispose();
-    _tagsController.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -151,43 +142,6 @@ class _AddItemScreenState extends State<AddItemScreen> {
               },
             ),
 
-            const SizedBox(height: 24),
-
-            // Notes
-            Text(
-              'Notes (Optional)',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            const SizedBox(height: 8),
-            TextField(
-              controller: _notesController,
-              decoration: InputDecoration(
-                hintText: 'Add notes about this item...',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-              maxLines: 3,
-            ),
-
-            const SizedBox(height: 24),
-
-            // Tags
-            Text(
-              'Tags (Optional)',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            const SizedBox(height: 8),
-            TextField(
-              controller: _tagsController,
-              decoration: InputDecoration(
-                hintText: 'Add tags separated by commas...',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-            ),
-
             const SizedBox(height: 32),
 
             if (_isProcessing)
@@ -243,21 +197,12 @@ class _AddItemScreenState extends State<AddItemScreen> {
       final imagePath =
           await imageProcessingService.saveImageLocally(_selectedImage!);
 
-      // Parse tags
-      final tags = _tagsController.text
-          .split(',')
-          .map((tag) => tag.trim())
-          .where((tag) => tag.isNotEmpty)
-          .toList();
-
       // Create clothing item
       final item = ClothingItem(
         id: _uuid.v4(),
         imagePath: imagePath,
         category: _selectedCategory,
         dateAdded: DateTime.now(),
-        notes: _notesController.text.isNotEmpty ? _notesController.text : null,
-        tags: tags.isNotEmpty ? tags : null,
       );
 
       // Add to bloc

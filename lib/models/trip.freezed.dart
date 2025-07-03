@@ -23,19 +23,11 @@ mixin _$Trip {
   @HiveField(0)
   String get id => throw _privateConstructorUsedError;
   @HiveField(1)
-  String get name => throw _privateConstructorUsedError;
-  @HiveField(2)
-  DateTime get startDate => throw _privateConstructorUsedError;
-  @HiveField(3)
-  DateTime get endDate => throw _privateConstructorUsedError;
-  @HiveField(4)
   List<String> get itemIds => throw _privateConstructorUsedError;
-  @HiveField(5)
+  @HiveField(2)
   List<String> get outfitIds => throw _privateConstructorUsedError;
-  @HiveField(6)
-  String? get destination => throw _privateConstructorUsedError;
-  @HiveField(7)
-  String? get notes => throw _privateConstructorUsedError;
+  @HiveField(3)
+  DateTime get dateCreated => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -49,13 +41,9 @@ abstract class $TripCopyWith<$Res> {
   @useResult
   $Res call(
       {@HiveField(0) String id,
-      @HiveField(1) String name,
-      @HiveField(2) DateTime startDate,
-      @HiveField(3) DateTime endDate,
-      @HiveField(4) List<String> itemIds,
-      @HiveField(5) List<String> outfitIds,
-      @HiveField(6) String? destination,
-      @HiveField(7) String? notes});
+      @HiveField(1) List<String> itemIds,
+      @HiveField(2) List<String> outfitIds,
+      @HiveField(3) DateTime dateCreated});
 }
 
 /// @nodoc
@@ -72,31 +60,15 @@ class _$TripCopyWithImpl<$Res, $Val extends Trip>
   @override
   $Res call({
     Object? id = null,
-    Object? name = null,
-    Object? startDate = null,
-    Object? endDate = null,
     Object? itemIds = null,
     Object? outfitIds = null,
-    Object? destination = freezed,
-    Object? notes = freezed,
+    Object? dateCreated = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as String,
-      name: null == name
-          ? _value.name
-          : name // ignore: cast_nullable_to_non_nullable
-              as String,
-      startDate: null == startDate
-          ? _value.startDate
-          : startDate // ignore: cast_nullable_to_non_nullable
-              as DateTime,
-      endDate: null == endDate
-          ? _value.endDate
-          : endDate // ignore: cast_nullable_to_non_nullable
-              as DateTime,
       itemIds: null == itemIds
           ? _value.itemIds
           : itemIds // ignore: cast_nullable_to_non_nullable
@@ -105,14 +77,10 @@ class _$TripCopyWithImpl<$Res, $Val extends Trip>
           ? _value.outfitIds
           : outfitIds // ignore: cast_nullable_to_non_nullable
               as List<String>,
-      destination: freezed == destination
-          ? _value.destination
-          : destination // ignore: cast_nullable_to_non_nullable
-              as String?,
-      notes: freezed == notes
-          ? _value.notes
-          : notes // ignore: cast_nullable_to_non_nullable
-              as String?,
+      dateCreated: null == dateCreated
+          ? _value.dateCreated
+          : dateCreated // ignore: cast_nullable_to_non_nullable
+              as DateTime,
     ) as $Val);
   }
 }
@@ -126,13 +94,9 @@ abstract class _$$TripImplCopyWith<$Res> implements $TripCopyWith<$Res> {
   @useResult
   $Res call(
       {@HiveField(0) String id,
-      @HiveField(1) String name,
-      @HiveField(2) DateTime startDate,
-      @HiveField(3) DateTime endDate,
-      @HiveField(4) List<String> itemIds,
-      @HiveField(5) List<String> outfitIds,
-      @HiveField(6) String? destination,
-      @HiveField(7) String? notes});
+      @HiveField(1) List<String> itemIds,
+      @HiveField(2) List<String> outfitIds,
+      @HiveField(3) DateTime dateCreated});
 }
 
 /// @nodoc
@@ -146,31 +110,15 @@ class __$$TripImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? id = null,
-    Object? name = null,
-    Object? startDate = null,
-    Object? endDate = null,
     Object? itemIds = null,
     Object? outfitIds = null,
-    Object? destination = freezed,
-    Object? notes = freezed,
+    Object? dateCreated = null,
   }) {
     return _then(_$TripImpl(
       id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as String,
-      name: null == name
-          ? _value.name
-          : name // ignore: cast_nullable_to_non_nullable
-              as String,
-      startDate: null == startDate
-          ? _value.startDate
-          : startDate // ignore: cast_nullable_to_non_nullable
-              as DateTime,
-      endDate: null == endDate
-          ? _value.endDate
-          : endDate // ignore: cast_nullable_to_non_nullable
-              as DateTime,
       itemIds: null == itemIds
           ? _value._itemIds
           : itemIds // ignore: cast_nullable_to_non_nullable
@@ -179,14 +127,10 @@ class __$$TripImplCopyWithImpl<$Res>
           ? _value._outfitIds
           : outfitIds // ignore: cast_nullable_to_non_nullable
               as List<String>,
-      destination: freezed == destination
-          ? _value.destination
-          : destination // ignore: cast_nullable_to_non_nullable
-              as String?,
-      notes: freezed == notes
-          ? _value.notes
-          : notes // ignore: cast_nullable_to_non_nullable
-              as String?,
+      dateCreated: null == dateCreated
+          ? _value.dateCreated
+          : dateCreated // ignore: cast_nullable_to_non_nullable
+              as DateTime,
     ));
   }
 }
@@ -196,13 +140,9 @@ class __$$TripImplCopyWithImpl<$Res>
 class _$TripImpl implements _Trip {
   const _$TripImpl(
       {@HiveField(0) required this.id,
-      @HiveField(1) required this.name,
-      @HiveField(2) required this.startDate,
-      @HiveField(3) required this.endDate,
-      @HiveField(4) required final List<String> itemIds,
-      @HiveField(5) required final List<String> outfitIds,
-      @HiveField(6) this.destination,
-      @HiveField(7) this.notes})
+      @HiveField(1) required final List<String> itemIds,
+      @HiveField(2) required final List<String> outfitIds,
+      @HiveField(3) required this.dateCreated})
       : _itemIds = itemIds,
         _outfitIds = outfitIds;
 
@@ -212,18 +152,9 @@ class _$TripImpl implements _Trip {
   @override
   @HiveField(0)
   final String id;
-  @override
-  @HiveField(1)
-  final String name;
-  @override
-  @HiveField(2)
-  final DateTime startDate;
-  @override
-  @HiveField(3)
-  final DateTime endDate;
   final List<String> _itemIds;
   @override
-  @HiveField(4)
+  @HiveField(1)
   List<String> get itemIds {
     if (_itemIds is EqualUnmodifiableListView) return _itemIds;
     // ignore: implicit_dynamic_type
@@ -232,7 +163,7 @@ class _$TripImpl implements _Trip {
 
   final List<String> _outfitIds;
   @override
-  @HiveField(5)
+  @HiveField(2)
   List<String> get outfitIds {
     if (_outfitIds is EqualUnmodifiableListView) return _outfitIds;
     // ignore: implicit_dynamic_type
@@ -240,15 +171,12 @@ class _$TripImpl implements _Trip {
   }
 
   @override
-  @HiveField(6)
-  final String? destination;
-  @override
-  @HiveField(7)
-  final String? notes;
+  @HiveField(3)
+  final DateTime dateCreated;
 
   @override
   String toString() {
-    return 'Trip(id: $id, name: $name, startDate: $startDate, endDate: $endDate, itemIds: $itemIds, outfitIds: $outfitIds, destination: $destination, notes: $notes)';
+    return 'Trip(id: $id, itemIds: $itemIds, outfitIds: $outfitIds, dateCreated: $dateCreated)';
   }
 
   @override
@@ -257,16 +185,11 @@ class _$TripImpl implements _Trip {
         (other.runtimeType == runtimeType &&
             other is _$TripImpl &&
             (identical(other.id, id) || other.id == id) &&
-            (identical(other.name, name) || other.name == name) &&
-            (identical(other.startDate, startDate) ||
-                other.startDate == startDate) &&
-            (identical(other.endDate, endDate) || other.endDate == endDate) &&
             const DeepCollectionEquality().equals(other._itemIds, _itemIds) &&
             const DeepCollectionEquality()
                 .equals(other._outfitIds, _outfitIds) &&
-            (identical(other.destination, destination) ||
-                other.destination == destination) &&
-            (identical(other.notes, notes) || other.notes == notes));
+            (identical(other.dateCreated, dateCreated) ||
+                other.dateCreated == dateCreated));
   }
 
   @JsonKey(ignore: true)
@@ -274,13 +197,9 @@ class _$TripImpl implements _Trip {
   int get hashCode => Object.hash(
       runtimeType,
       id,
-      name,
-      startDate,
-      endDate,
       const DeepCollectionEquality().hash(_itemIds),
       const DeepCollectionEquality().hash(_outfitIds),
-      destination,
-      notes);
+      dateCreated);
 
   @JsonKey(ignore: true)
   @override
@@ -299,13 +218,9 @@ class _$TripImpl implements _Trip {
 abstract class _Trip implements Trip {
   const factory _Trip(
       {@HiveField(0) required final String id,
-      @HiveField(1) required final String name,
-      @HiveField(2) required final DateTime startDate,
-      @HiveField(3) required final DateTime endDate,
-      @HiveField(4) required final List<String> itemIds,
-      @HiveField(5) required final List<String> outfitIds,
-      @HiveField(6) final String? destination,
-      @HiveField(7) final String? notes}) = _$TripImpl;
+      @HiveField(1) required final List<String> itemIds,
+      @HiveField(2) required final List<String> outfitIds,
+      @HiveField(3) required final DateTime dateCreated}) = _$TripImpl;
 
   factory _Trip.fromJson(Map<String, dynamic> json) = _$TripImpl.fromJson;
 
@@ -314,25 +229,13 @@ abstract class _Trip implements Trip {
   String get id;
   @override
   @HiveField(1)
-  String get name;
-  @override
-  @HiveField(2)
-  DateTime get startDate;
-  @override
-  @HiveField(3)
-  DateTime get endDate;
-  @override
-  @HiveField(4)
   List<String> get itemIds;
   @override
-  @HiveField(5)
+  @HiveField(2)
   List<String> get outfitIds;
   @override
-  @HiveField(6)
-  String? get destination;
-  @override
-  @HiveField(7)
-  String? get notes;
+  @HiveField(3)
+  DateTime get dateCreated;
   @override
   @JsonKey(ignore: true)
   _$$TripImplCopyWith<_$TripImpl> get copyWith =>

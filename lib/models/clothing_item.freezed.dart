@@ -28,10 +28,6 @@ mixin _$ClothingItem {
   ClothingCategory get category => throw _privateConstructorUsedError;
   @HiveField(3)
   DateTime get dateAdded => throw _privateConstructorUsedError;
-  @HiveField(4)
-  String? get notes => throw _privateConstructorUsedError;
-  @HiveField(5)
-  List<String>? get tags => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -49,9 +45,7 @@ abstract class $ClothingItemCopyWith<$Res> {
       {@HiveField(0) String id,
       @HiveField(1) String imagePath,
       @HiveField(2) ClothingCategory category,
-      @HiveField(3) DateTime dateAdded,
-      @HiveField(4) String? notes,
-      @HiveField(5) List<String>? tags});
+      @HiveField(3) DateTime dateAdded});
 }
 
 /// @nodoc
@@ -71,8 +65,6 @@ class _$ClothingItemCopyWithImpl<$Res, $Val extends ClothingItem>
     Object? imagePath = null,
     Object? category = null,
     Object? dateAdded = null,
-    Object? notes = freezed,
-    Object? tags = freezed,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -91,14 +83,6 @@ class _$ClothingItemCopyWithImpl<$Res, $Val extends ClothingItem>
           ? _value.dateAdded
           : dateAdded // ignore: cast_nullable_to_non_nullable
               as DateTime,
-      notes: freezed == notes
-          ? _value.notes
-          : notes // ignore: cast_nullable_to_non_nullable
-              as String?,
-      tags: freezed == tags
-          ? _value.tags
-          : tags // ignore: cast_nullable_to_non_nullable
-              as List<String>?,
     ) as $Val);
   }
 }
@@ -115,9 +99,7 @@ abstract class _$$ClothingItemImplCopyWith<$Res>
       {@HiveField(0) String id,
       @HiveField(1) String imagePath,
       @HiveField(2) ClothingCategory category,
-      @HiveField(3) DateTime dateAdded,
-      @HiveField(4) String? notes,
-      @HiveField(5) List<String>? tags});
+      @HiveField(3) DateTime dateAdded});
 }
 
 /// @nodoc
@@ -135,8 +117,6 @@ class __$$ClothingItemImplCopyWithImpl<$Res>
     Object? imagePath = null,
     Object? category = null,
     Object? dateAdded = null,
-    Object? notes = freezed,
-    Object? tags = freezed,
   }) {
     return _then(_$ClothingItemImpl(
       id: null == id
@@ -155,14 +135,6 @@ class __$$ClothingItemImplCopyWithImpl<$Res>
           ? _value.dateAdded
           : dateAdded // ignore: cast_nullable_to_non_nullable
               as DateTime,
-      notes: freezed == notes
-          ? _value.notes
-          : notes // ignore: cast_nullable_to_non_nullable
-              as String?,
-      tags: freezed == tags
-          ? _value._tags
-          : tags // ignore: cast_nullable_to_non_nullable
-              as List<String>?,
     ));
   }
 }
@@ -174,10 +146,7 @@ class _$ClothingItemImpl implements _ClothingItem {
       {@HiveField(0) required this.id,
       @HiveField(1) required this.imagePath,
       @HiveField(2) required this.category,
-      @HiveField(3) required this.dateAdded,
-      @HiveField(4) this.notes,
-      @HiveField(5) final List<String>? tags})
-      : _tags = tags;
+      @HiveField(3) required this.dateAdded});
 
   factory _$ClothingItemImpl.fromJson(Map<String, dynamic> json) =>
       _$$ClothingItemImplFromJson(json);
@@ -194,23 +163,10 @@ class _$ClothingItemImpl implements _ClothingItem {
   @override
   @HiveField(3)
   final DateTime dateAdded;
-  @override
-  @HiveField(4)
-  final String? notes;
-  final List<String>? _tags;
-  @override
-  @HiveField(5)
-  List<String>? get tags {
-    final value = _tags;
-    if (value == null) return null;
-    if (_tags is EqualUnmodifiableListView) return _tags;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(value);
-  }
 
   @override
   String toString() {
-    return 'ClothingItem(id: $id, imagePath: $imagePath, category: $category, dateAdded: $dateAdded, notes: $notes, tags: $tags)';
+    return 'ClothingItem(id: $id, imagePath: $imagePath, category: $category, dateAdded: $dateAdded)';
   }
 
   @override
@@ -224,15 +180,13 @@ class _$ClothingItemImpl implements _ClothingItem {
             (identical(other.category, category) ||
                 other.category == category) &&
             (identical(other.dateAdded, dateAdded) ||
-                other.dateAdded == dateAdded) &&
-            (identical(other.notes, notes) || other.notes == notes) &&
-            const DeepCollectionEquality().equals(other._tags, _tags));
+                other.dateAdded == dateAdded));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, id, imagePath, category,
-      dateAdded, notes, const DeepCollectionEquality().hash(_tags));
+  int get hashCode =>
+      Object.hash(runtimeType, id, imagePath, category, dateAdded);
 
   @JsonKey(ignore: true)
   @override
@@ -253,9 +207,7 @@ abstract class _ClothingItem implements ClothingItem {
       {@HiveField(0) required final String id,
       @HiveField(1) required final String imagePath,
       @HiveField(2) required final ClothingCategory category,
-      @HiveField(3) required final DateTime dateAdded,
-      @HiveField(4) final String? notes,
-      @HiveField(5) final List<String>? tags}) = _$ClothingItemImpl;
+      @HiveField(3) required final DateTime dateAdded}) = _$ClothingItemImpl;
 
   factory _ClothingItem.fromJson(Map<String, dynamic> json) =
       _$ClothingItemImpl.fromJson;
@@ -272,12 +224,6 @@ abstract class _ClothingItem implements ClothingItem {
   @override
   @HiveField(3)
   DateTime get dateAdded;
-  @override
-  @HiveField(4)
-  String? get notes;
-  @override
-  @HiveField(5)
-  List<String>? get tags;
   @override
   @JsonKey(ignore: true)
   _$$ClothingItemImplCopyWith<_$ClothingItemImpl> get copyWith =>

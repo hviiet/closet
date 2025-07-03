@@ -6,8 +6,7 @@ import '../bloc/clothing_state.dart';
 import '../cubit/filter_cubit.dart';
 import '../models/models.dart';
 import '../widgets/clothing_item_widget.dart';
-import '../widgets/category_filter_chip.dart';
-import '../widgets/advanced_filter_bottom_sheet.dart';
+
 import '../constants/app_theme.dart';
 import 'add_item_screen.dart';
 
@@ -70,20 +69,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       ],
                     ),
                   ),
-                  PopupMenuItem(
-                    value: SortOption.name,
-                    child: Row(
-                      children: [
-                        Icon(
-                          filterState.sortOption == SortOption.name
-                              ? Icons.radio_button_checked
-                              : Icons.radio_button_unchecked,
-                        ),
-                        const SizedBox(width: 8),
-                        const Text('Name'),
-                      ],
-                    ),
-                  ),
                   const PopupMenuDivider(),
                   PopupMenuItem(
                     value: null,
@@ -129,7 +114,7 @@ class _HomeScreenState extends State<HomeScreen> {
             builder: (context, filterState) {
               return IconButton(
                 icon:
-                    Icon(filterState.isGridView ? Icons.list : Icons.grid_view),
+                    Icon(filterState.isGridView ? Icons.grid_view : Icons.list),
                 onPressed: () {
                   context.read<FilterCubit>().toggleViewMode();
                 },
@@ -185,39 +170,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               );
             },
-          ),
-
-          // Category Filters
-          Container(
-            height: 60,
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              children: [
-                CategoryFilterChip(
-                  label: 'All',
-                  category: null,
-                  onSelected: (category) {
-                    context.read<FilterCubit>().setCategory(category);
-                  },
-                ),
-                const SizedBox(width: 8),
-                ...ClothingCategory.values.map(
-                  (category) => Padding(
-                    padding: const EdgeInsets.only(right: 8),
-                    child: CategoryFilterChip(
-                      label: category.displayName,
-                      category: category,
-                      onSelected: (selectedCategory) {
-                        context
-                            .read<FilterCubit>()
-                            .setCategory(selectedCategory);
-                      },
-                    ),
-                  ),
-                ),
-              ],
-            ),
           ),
 
           const Divider(height: 1),
@@ -365,8 +317,10 @@ class _HomeScreenState extends State<HomeScreen> {
   void _showAdvancedFilters(BuildContext context) {
     showModalBottomSheet(
       context: context,
-      isScrollControlled: true,
-      builder: (context) => const AdvancedFilterBottomSheet(),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => _CategorySelectionBottomSheet(),
     );
   }
 
@@ -374,5 +328,80 @@ class _HomeScreenState extends State<HomeScreen> {
     final start = '${range.startDate.day}/${range.startDate.month}';
     final end = '${range.endDate.day}/${range.endDate.month}';
     return '$start - $end';
+  }
+
+  Widget _CategorySelectionBottomSheet() {
+    return BlocBuilder<FilterCubit, FilterState>(
+      builder: (context, filterState) {
+        return Container(
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(context).size.height * 0.7,
+          ),
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Text(
+                    'Select Category',
+                    style: Theme.of(context).textTheme.headlineSmall,
+                  ),
+                  const Spacer(),
+                  IconButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    icon: const Icon(Icons.close),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              Flexible(
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      // All Categories option
+                      ListTile(
+                        title: const Text('All'),
+                        leading: Radio<ClothingCategory?>(
+                          value: null,
+                          groupValue: filterState.selectedCategory,
+                          onChanged: (ClothingCategory? value) {
+                            context.read<FilterCubit>().setCategory(value);
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                        onTap: () {
+                          context.read<FilterCubit>().setCategory(null);
+                          Navigator.of(context).pop();
+                        },
+                      ),
+
+                      // Individual category options
+                      ...ClothingCategory.values.map((category) => ListTile(
+                            title: Text(category.displayName),
+                            leading: Radio<ClothingCategory?>(
+                              value: category,
+                              groupValue: filterState.selectedCategory,
+                              onChanged: (ClothingCategory? value) {
+                                context.read<FilterCubit>().setCategory(value);
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                            onTap: () {
+                              context.read<FilterCubit>().setCategory(category);
+                              Navigator.of(context).pop();
+                            },
+                          )),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+            ],
+          ),
+        );
+      },
+    );
   }
 }
