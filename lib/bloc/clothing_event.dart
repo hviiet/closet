@@ -45,12 +45,3 @@ class FilterClothingByCategory extends ClothingEvent {
   @override
   List<Object?> get props => [category];
 }
-
-class SearchClothingItems extends ClothingEvent {
-  final String query;
-
-  const SearchClothingItems(this.query);
-
-  @override
-  List<Object> get props => [query];
-}

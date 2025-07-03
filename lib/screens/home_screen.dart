@@ -20,14 +20,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final TextEditingController _searchController = TextEditingController();
-
-  @override
-  void dispose() {
-    _searchController.dispose();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -147,35 +139,6 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: Column(
         children: [
-          // Search Bar
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: TextField(
-              controller: _searchController,
-              decoration: InputDecoration(
-                hintText: 'Search clothing items...',
-                prefixIcon: const Icon(Icons.search),
-                suffixIcon: _searchController.text.isNotEmpty
-                    ? IconButton(
-                        icon: const Icon(Icons.clear),
-                        onPressed: () {
-                          _searchController.clear();
-                          context
-                              .read<ClothingBloc>()
-                              .add(const SearchClothingItems(''));
-                        },
-                      )
-                    : null,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-              onChanged: (value) {
-                context.read<ClothingBloc>().add(SearchClothingItems(value));
-              },
-            ),
-          ),
-
           // Active Filters Display
           BlocBuilder<FilterCubit, FilterState>(
             builder: (context, filterState) {
@@ -301,9 +264,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     // Apply enhanced filtering
                     final filteredItems = context
                         .read<FilterCubit>()
-                        .applyFilters(clothingState.searchQuery.isEmpty
-                            ? clothingState.items
-                            : clothingState.filteredItems);
+                        .applyFilters(clothingState.items);
 
                     if (filteredItems.isEmpty) {
                       return Center(
@@ -319,17 +280,15 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                             const SizedBox(height: 16),
                             Text(
-                              filterState.hasActiveFilters ||
-                                      clothingState.searchQuery.isNotEmpty
+                              filterState.hasActiveFilters
                                   ? 'No items match your filters'
                                   : 'No clothing items yet',
                               style: Theme.of(context).textTheme.bodyLarge,
                             ),
                             const SizedBox(height: 8),
                             Text(
-                              filterState.hasActiveFilters ||
-                                      clothingState.searchQuery.isNotEmpty
-                                  ? 'Try adjusting your filters or search terms'
+                              filterState.hasActiveFilters
+                                  ? 'Try adjusting your filters'
                                   : 'Add your first clothing item!',
                               style: Theme.of(context)
                                   .textTheme
