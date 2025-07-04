@@ -247,14 +247,16 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         spacing: 8,
                         runSpacing: 4,
                         children: [
-                          if (filterState.selectedCategory != null)
-                            _buildFilterChip(
+                          ...filterState.selectedCategories.map(
+                            (category) => _buildFilterChip(
                               context,
-                              filterState.selectedCategory!.displayName,
+                              category.displayName,
                               Icons.category_outlined,
-                              () =>
-                                  context.read<FilterCubit>().setCategory(null),
+                              () => context
+                                  .read<FilterCubit>()
+                                  .toggleCategory(category),
                             ),
+                          ),
                         ],
                       ),
                     ],
@@ -704,13 +706,10 @@ class _CategorySelectionBottomSheet extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Column(
                   children: [
-                    // All Categories option
-                    _buildCategoryTile(
+                    // Clear All Categories option
+                    _buildClearAllTile(
                       context,
-                      null,
-                      'All Categories',
-                      Icons.all_inclusive,
-                      filterState.selectedCategory,
+                      filterState.selectedCategories,
                     ),
 
                     const SizedBox(height: 8),
@@ -722,7 +721,7 @@ class _CategorySelectionBottomSheet extends StatelessWidget {
                               category,
                               category.displayName,
                               _getCategoryIcon(category),
-                              filterState.selectedCategory,
+                              filterState.selectedCategories,
                             )),
                   ],
                 ),
@@ -736,16 +735,80 @@ class _CategorySelectionBottomSheet extends StatelessWidget {
     );
   }
 
-  Widget _buildCategoryTile(
+  Widget _buildClearAllTile(
     BuildContext context,
-    ClothingCategory? category,
-    String title,
-    IconData icon,
-    ClothingCategory? selectedCategory,
+    Set<ClothingCategory> selectedCategories,
   ) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final isSelected = selectedCategory == category;
+    final hasSelections = selectedCategories.isNotEmpty;
+
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 2),
+      decoration: BoxDecoration(
+        color: hasSelections
+            ? colorScheme.errorContainer.withOpacity(0.3)
+            : Colors.transparent,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: ListTile(
+        leading: Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: hasSelections
+                ? colorScheme.errorContainer
+                : colorScheme.surfaceContainerHighest,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Icon(
+            Icons.clear_all,
+            color: hasSelections
+                ? colorScheme.onErrorContainer
+                : colorScheme.onSurfaceVariant,
+            size: 20,
+          ),
+        ),
+        title: Text(
+          'Clear All Filters',
+          style: theme.textTheme.bodyLarge?.copyWith(
+            fontWeight: hasSelections ? FontWeight.w600 : FontWeight.w400,
+            color: hasSelections ? colorScheme.error : colorScheme.onSurface,
+          ),
+        ),
+        trailing: hasSelections
+            ? IconButton(
+                onPressed: () {
+                  context.read<FilterCubit>().clearCategories();
+                },
+                icon: Icon(
+                  Icons.close,
+                  color: colorScheme.error,
+                  size: 20,
+                ),
+              )
+            : null,
+        onTap: hasSelections
+            ? () {
+                context.read<FilterCubit>().clearCategories();
+              }
+            : null,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCategoryTile(
+    BuildContext context,
+    ClothingCategory category,
+    String title,
+    IconData icon,
+    Set<ClothingCategory> selectedCategories,
+  ) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final isSelected = selectedCategories.contains(category);
 
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 2),
@@ -779,18 +842,15 @@ class _CategorySelectionBottomSheet extends StatelessWidget {
             color: isSelected ? colorScheme.primary : colorScheme.onSurface,
           ),
         ),
-        trailing: Radio<ClothingCategory?>(
-          value: category,
-          groupValue: selectedCategory,
-          onChanged: (ClothingCategory? value) {
-            context.read<FilterCubit>().setCategory(value);
-            Navigator.of(context).pop();
+        trailing: Checkbox(
+          value: isSelected,
+          onChanged: (bool? value) {
+            context.read<FilterCubit>().toggleCategory(category);
           },
           activeColor: colorScheme.primary,
         ),
         onTap: () {
-          context.read<FilterCubit>().setCategory(category);
-          Navigator.of(context).pop();
+          context.read<FilterCubit>().toggleCategory(category);
         },
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),

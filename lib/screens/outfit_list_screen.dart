@@ -55,29 +55,65 @@ class _OutfitListScreenState extends State<OutfitListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('My Outfits'),
-        backgroundColor: context.theme.appBar,
-        actions: [
-          IconButton(
-            onPressed: () async {
-              final result = await Navigator.push<bool>(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const OutfitBuilderScreen(),
+      body: CustomScrollView(
+        slivers: [
+          // Modern App Bar with enhanced styling (matching home screen)
+          SliverAppBar.large(
+            title: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'My Outfits',
+                  style: theme.textTheme.headlineMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    color: colorScheme.onSurface,
+                  ),
                 ),
-              );
-              if (result == true) {
-                _loadOutfits();
-              }
-            },
-            icon: const Icon(Icons.add),
-            tooltip: 'Create New Outfit',
+                Text(
+                  'Create and manage your outfits',
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            ),
+            backgroundColor: colorScheme.surface,
+            surfaceTintColor: colorScheme.surfaceTint,
+            expandedHeight: 120,
+            floating: false,
+            pinned: true,
+            snap: false,
+            elevation: 0,
+            scrolledUnderElevation: 1,
+            actions: [
+              IconButton(
+                onPressed: () async {
+                  final result = await Navigator.push<bool>(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const OutfitBuilderScreen(),
+                    ),
+                  );
+                  if (result == true) {
+                    _loadOutfits();
+                  }
+                },
+                icon: const Icon(Icons.add),
+                tooltip: 'Create New Outfit',
+              ),
+            ],
+          ),
+
+          // Content Section
+          SliverToBoxAdapter(
+            child: _buildBody(),
           ),
         ],
       ),
-      body: _buildBody(),
     );
   }
 

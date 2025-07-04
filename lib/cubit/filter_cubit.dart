@@ -7,7 +7,7 @@ enum SortOption { dateAdded, category, recentlyUsed }
 enum SortOrder { ascending, descending }
 
 class FilterState extends Equatable {
-  final ClothingCategory? selectedCategory;
+  final Set<ClothingCategory> selectedCategories;
   final SortOption sortOption;
   final SortOrder sortOrder;
   final bool isGridView;
@@ -17,7 +17,7 @@ class FilterState extends Equatable {
   final String searchQuery;
 
   const FilterState({
-    this.selectedCategory,
+    this.selectedCategories = const {},
     this.sortOption = SortOption.dateAdded,
     this.sortOrder = SortOrder.descending,
     this.isGridView = true,
@@ -28,21 +28,22 @@ class FilterState extends Equatable {
   });
 
   FilterState copyWith({
-    ClothingCategory? selectedCategory,
+    Set<ClothingCategory>? selectedCategories,
     SortOption? sortOption,
     SortOrder? sortOrder,
     bool? isGridView,
     List<String>? selectedTags,
     bool? showOnlyFavorites,
     DateRange? dateRange,
-    bool clearCategory = false,
+    bool clearCategories = false,
     bool clearTags = false,
     bool clearDateRange = false,
     String? searchQuery,
   }) {
     return FilterState(
-      selectedCategory:
-          clearCategory ? null : (selectedCategory ?? this.selectedCategory),
+      selectedCategories: clearCategories
+          ? {}
+          : (selectedCategories ?? this.selectedCategories),
       sortOption: sortOption ?? this.sortOption,
       sortOrder: sortOrder ?? this.sortOrder,
       isGridView: isGridView ?? this.isGridView,
@@ -54,7 +55,7 @@ class FilterState extends Equatable {
   }
 
   bool get hasActiveFilters =>
-      selectedCategory != null ||
+      selectedCategories.isNotEmpty ||
       selectedTags.isNotEmpty ||
       showOnlyFavorites ||
       dateRange != null ||
@@ -62,7 +63,7 @@ class FilterState extends Equatable {
 
   @override
   List<Object?> get props => [
-        selectedCategory,
+        selectedCategories,
         sortOption,
         sortOrder,
         isGridView,
@@ -86,11 +87,31 @@ class DateRange extends Equatable {
 class FilterCubit extends Cubit<FilterState> {
   FilterCubit() : super(const FilterState());
 
+  void toggleCategory(ClothingCategory category) {
+    final newCategories = Set<ClothingCategory>.from(state.selectedCategories);
+    if (newCategories.contains(category)) {
+      newCategories.remove(category);
+    } else {
+      newCategories.add(category);
+    }
+    emit(state.copyWith(selectedCategories: newCategories));
+  }
+
+  void setCategories(Set<ClothingCategory> categories) {
+    emit(state.copyWith(selectedCategories: categories));
+  }
+
+  void clearCategories() {
+    emit(state.copyWith(clearCategories: true));
+  }
+
+  // Legacy method for backward compatibility - converts single category to set
   void setCategory(ClothingCategory? category) {
-    emit(state.copyWith(
-      selectedCategory: category,
-      clearCategory: category == null,
-    ));
+    if (category == null) {
+      clearCategories();
+    } else {
+      setCategories({category});
+    }
   }
 
   void setSortOption(SortOption option) {
@@ -151,10 +172,10 @@ class FilterCubit extends Cubit<FilterState> {
   List<ClothingItem> applyFilters(List<ClothingItem> items) {
     var filtered = List<ClothingItem>.from(items);
 
-    // Apply category filter
-    if (state.selectedCategory != null) {
+    // Apply category filter - show items that match any selected category
+    if (state.selectedCategories.isNotEmpty) {
       filtered = filtered
-          .where((item) => item.category == state.selectedCategory)
+          .where((item) => state.selectedCategories.contains(item.category))
           .toList();
     }
 

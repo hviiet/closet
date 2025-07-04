@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../cubit/theme_cubit.dart';
-import '../constants/app_theme.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -13,95 +12,134 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Settings'),
-        backgroundColor: context.theme.appBar,
-      ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          _buildSection(
-            'General',
-            [
-              BlocBuilder<ThemeCubit, bool>(
-                builder: (context, isDarkMode) {
-                  return _buildSettingsTile(
-                    icon: Icons.dark_mode,
-                    title: 'Theme',
-                    subtitle: isDarkMode ? 'Dark mode' : 'Light mode',
-                    trailing: Switch(
-                      value: isDarkMode,
-                      onChanged: (value) {
-                        context.read<ThemeCubit>().toggleTheme();
-                      },
-                      activeColor: context.theme.greenPrimary,
-                    ),
-                  );
-                },
-              ),
-              _buildSettingsTile(
-                icon: Icons.notifications,
-                title: 'Notifications',
-                subtitle: 'Enable notifications',
-                trailing: Switch(
-                  value: true,
-                  onChanged: (value) {
-                    // TODO: Implement notification settings
-                  },
+      body: CustomScrollView(
+        slivers: [
+          // Modern App Bar with enhanced styling (matching home screen)
+          SliverAppBar.large(
+            title: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Settings',
+                  style: theme.textTheme.headlineMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    color: colorScheme.onSurface,
+                  ),
                 ),
-              ),
-            ],
+                Text(
+                  'Customize your experience',
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            ),
+            backgroundColor: colorScheme.surface,
+            surfaceTintColor: colorScheme.surfaceTint,
+            expandedHeight: 120,
+            floating: false,
+            pinned: true,
+            snap: false,
+            elevation: 0,
+            scrolledUnderElevation: 1,
           ),
-          const SizedBox(height: 24),
-          _buildSection(
-            'Storage',
-            [
-              _buildSettingsTile(
-                icon: Icons.storage,
-                title: 'Data Management',
-                subtitle: 'Manage your data',
-                onTap: () {
-                  // TODO: Implement data management
-                },
-              ),
-              _buildSettingsTile(
-                icon: Icons.backup,
-                title: 'Backup & Sync',
-                subtitle: 'Cloud backup settings',
-                onTap: () {
-                  // TODO: Implement backup settings
-                },
-              ),
-            ],
-          ),
-          const SizedBox(height: 24),
-          _buildSection(
-            'About',
-            [
-              _buildSettingsTile(
-                icon: Icons.info,
-                title: 'App Version',
-                subtitle: '1.0.0',
-                onTap: () {},
-              ),
-              _buildSettingsTile(
-                icon: Icons.help,
-                title: 'Help & Support',
-                subtitle: 'Get help and support',
-                onTap: () {
-                  // TODO: Implement help screen
-                },
-              ),
-              _buildSettingsTile(
-                icon: Icons.privacy_tip,
-                title: 'Privacy Policy',
-                subtitle: 'Read our privacy policy',
-                onTap: () {
-                  // TODO: Implement privacy policy
-                },
-              ),
-            ],
+
+          // Content Section
+          SliverToBoxAdapter(
+            child: ListView(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              padding: const EdgeInsets.all(16),
+              children: [
+                _buildSection(
+                  'General',
+                  [
+                    BlocBuilder<ThemeCubit, bool>(
+                      builder: (context, isDarkMode) {
+                        return _buildSettingsTile(
+                          icon: Icons.dark_mode,
+                          title: 'Theme',
+                          subtitle: isDarkMode ? 'Dark mode' : 'Light mode',
+                          trailing: Switch(
+                            value: isDarkMode,
+                            onChanged: (value) {
+                              context.read<ThemeCubit>().toggleTheme();
+                            },
+                            activeColor: colorScheme.primary,
+                          ),
+                        );
+                      },
+                    ),
+                    _buildSettingsTile(
+                      icon: Icons.notifications,
+                      title: 'Notifications',
+                      subtitle: 'Enable notifications',
+                      trailing: Switch(
+                        value: true,
+                        onChanged: (value) {
+                          // TODO: Implement notification settings
+                        },
+                        activeColor: colorScheme.primary,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 24),
+                _buildSection(
+                  'Storage',
+                  [
+                    _buildSettingsTile(
+                      icon: Icons.storage,
+                      title: 'Data Management',
+                      subtitle: 'Manage your data',
+                      onTap: () {
+                        // TODO: Implement data management
+                      },
+                    ),
+                    _buildSettingsTile(
+                      icon: Icons.backup,
+                      title: 'Backup & Sync',
+                      subtitle: 'Cloud backup settings',
+                      onTap: () {
+                        // TODO: Implement backup settings
+                      },
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 24),
+                _buildSection(
+                  'About',
+                  [
+                    _buildSettingsTile(
+                      icon: Icons.info,
+                      title: 'App Version',
+                      subtitle: '1.0.0',
+                      onTap: () {},
+                    ),
+                    _buildSettingsTile(
+                      icon: Icons.help,
+                      title: 'Help & Support',
+                      subtitle: 'Get help and support',
+                      onTap: () {
+                        // TODO: Implement help screen
+                      },
+                    ),
+                    _buildSettingsTile(
+                      icon: Icons.privacy_tip,
+                      title: 'Privacy Policy',
+                      subtitle: 'Read our privacy policy',
+                      onTap: () {
+                        // TODO: Implement privacy policy
+                      },
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -109,6 +147,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Widget _buildSection(String title, List<Widget> children) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -116,15 +157,25 @@ class _SettingsScreenState extends State<SettingsScreen> {
           padding: const EdgeInsets.only(left: 16, bottom: 8),
           child: Text(
             title,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: context.theme.greenPrimary,
-                  fontWeight: FontWeight.bold,
-                ),
+            style: theme.textTheme.titleMedium?.copyWith(
+              color: colorScheme.primary,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
         Card(
-          color: context.theme.surface,
-          child: Column(children: children),
+          elevation: 0,
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: colorScheme.outline.withOpacity(0.12),
+                width: 1,
+              ),
+              color: colorScheme.surface,
+            ),
+            child: Column(children: children),
+          ),
         ),
       ],
     );

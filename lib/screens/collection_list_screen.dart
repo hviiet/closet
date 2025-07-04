@@ -22,140 +22,183 @@ class _CollectionListScreenState extends State<CollectionListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Collections'),
-        backgroundColor: context.theme.appBar,
-      ),
-      body: BlocBuilder<CollectionCubit, CollectionState>(
-        builder: (context, state) {
-          if (state.status == CollectionStatus.loading) {
-            return const Center(child: CircularProgressIndicator());
-          }
+      body: CustomScrollView(
+        slivers: [
+          // Modern App Bar with enhanced styling (matching home screen)
+          SliverAppBar.large(
+            title: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Collections',
+                  style: theme.textTheme.headlineMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    color: colorScheme.onSurface,
+                  ),
+                ),
+                Text(
+                  'Organize your wardrobe',
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            ),
+            backgroundColor: colorScheme.surface,
+            surfaceTintColor: colorScheme.surfaceTint,
+            expandedHeight: 120,
+            floating: false,
+            pinned: true,
+            snap: false,
+            elevation: 0,
+            scrolledUnderElevation: 1,
+          ),
 
-          if (state.status == CollectionStatus.failure) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.error_outline,
-                    size: 64,
-                    color: Theme.of(context).colorScheme.error,
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Error: ${state.errorMessage}',
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.bodyLarge,
-                  ),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () {
-                      context.read<CollectionCubit>().loadCollections();
-                    },
-                    child: const Text('Retry'),
-                  ),
-                ],
-              ),
-            );
-          }
+          // Content Section
+          SliverToBoxAdapter(
+            child: BlocBuilder<CollectionCubit, CollectionState>(
+              builder: (context, state) {
+                if (state.status == CollectionStatus.loading) {
+                  return const Center(child: CircularProgressIndicator());
+                }
 
-          if (state.collections.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.collections_outlined,
-                    size: 64,
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'No collections yet',
-                    style: Theme.of(context).textTheme.bodyLarge,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Create your first collection!',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                if (state.status == CollectionStatus.failure) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.error_outline,
+                          size: 64,
+                          color: Theme.of(context).colorScheme.error,
                         ),
-                  ),
-                ],
-              ),
-            );
-          }
-
-          return ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: state.collections.length,
-            itemBuilder: (context, index) {
-              final collection = state.collections[index];
-              return Card(
-                margin: const EdgeInsets.only(bottom: 12),
-                child: ListTile(
-                  leading: CircleAvatar(
-                    backgroundColor:
-                        context.theme.greenPrimary.withOpacity(0.2),
-                    child: Icon(
-                      Icons.collections,
-                      color: context.theme.greenPrimary,
+                        const SizedBox(height: 16),
+                        Text(
+                          'Error: ${state.errorMessage}',
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.bodyLarge,
+                        ),
+                        const SizedBox(height: 16),
+                        ElevatedButton(
+                          onPressed: () {
+                            context.read<CollectionCubit>().loadCollections();
+                          },
+                          child: const Text('Retry'),
+                        ),
+                      ],
                     ),
-                  ),
-                  title: Text(
-                    'Collection ${collection.id}',
-                    style: const TextStyle(fontWeight: FontWeight.w500),
-                  ),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                          '${collection.itemIds.length} items, ${collection.outfitIds.length} outfits'),
-                      Text(
-                        'Created: ${_formatDate(collection.dateCreated)}',
-                        style: TextStyle(
+                  );
+                }
+
+                if (state.collections.isEmpty) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.collections_outlined,
+                          size: 64,
                           color: Theme.of(context).colorScheme.onSurfaceVariant,
-                          fontSize: 12,
                         ),
-                      ),
-                    ],
-                  ),
-                  trailing: PopupMenuButton(
-                    onSelected: (value) {
-                      if (value == 'delete') {
-                        _showDeleteDialog(context, collection);
-                      }
-                    },
-                    itemBuilder: (context) => [
-                      const PopupMenuItem(
-                        value: 'delete',
-                        child: Row(
+                        const SizedBox(height: 16),
+                        Text(
+                          'No collections yet',
+                          style: Theme.of(context).textTheme.bodyLarge,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Create your first collection!',
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurfaceVariant,
+                                  ),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+
+                return ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  padding: const EdgeInsets.all(16),
+                  itemCount: state.collections.length,
+                  itemBuilder: (context, index) {
+                    final collection = state.collections[index];
+                    return Card(
+                      margin: const EdgeInsets.only(bottom: 12),
+                      child: ListTile(
+                        leading: CircleAvatar(
+                          backgroundColor:
+                              context.theme.greenPrimary.withOpacity(0.2),
+                          child: Icon(
+                            Icons.collections,
+                            color: context.theme.greenPrimary,
+                          ),
+                        ),
+                        title: Text(
+                          'Collection ${collection.id}',
+                          style: const TextStyle(fontWeight: FontWeight.w500),
+                        ),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Icon(Icons.delete, color: Colors.red),
-                            SizedBox(width: 8),
-                            Text('Delete'),
+                            Text(
+                                '${collection.itemIds.length} items, ${collection.outfitIds.length} outfits'),
+                            Text(
+                              'Created: ${_formatDate(collection.dateCreated)}',
+                              style: TextStyle(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onSurfaceVariant,
+                                fontSize: 12,
+                              ),
+                            ),
                           ],
                         ),
-                      ),
-                    ],
-                  ),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => CollectionDetailScreen(
-                          collection: collection,
+                        trailing: PopupMenuButton(
+                          onSelected: (value) {
+                            if (value == 'delete') {
+                              _showDeleteDialog(context, collection);
+                            }
+                          },
+                          itemBuilder: (context) => [
+                            const PopupMenuItem(
+                              value: 'delete',
+                              child: Row(
+                                children: [
+                                  Icon(Icons.delete, color: Colors.red),
+                                  SizedBox(width: 8),
+                                  Text('Delete'),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => CollectionDetailScreen(
+                                collection: collection,
+                              ),
+                            ),
+                          );
+                        },
                       ),
                     );
                   },
-                ),
-              );
-            },
-          );
-        },
+                );
+              },
+            ),
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {

@@ -32,11 +32,16 @@ void main() async {
   Hive.registerAdapter(OutfitSetAdapter());
   Hive.registerAdapter(CollectionAdapter());
 
-  runApp(const TClosetApp());
+  // Load initial theme state
+  final initialTheme = await ThemeCubit.getInitialTheme();
+
+  runApp(TClosetApp(initialTheme: initialTheme));
 }
 
 class TClosetApp extends StatelessWidget {
-  const TClosetApp({super.key});
+  final bool initialTheme;
+
+  const TClosetApp({super.key, required this.initialTheme});
 
   @override
   Widget build(BuildContext context) {
@@ -79,7 +84,7 @@ class TClosetApp extends StatelessWidget {
             ),
           ),
           BlocProvider<ThemeCubit>(
-            create: (context) => ThemeCubit(),
+            create: (context) => ThemeCubit(initialTheme),
           ),
         ],
         child: BlocBuilder<ThemeCubit, bool>(
