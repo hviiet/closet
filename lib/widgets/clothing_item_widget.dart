@@ -40,7 +40,7 @@ class ClothingItemWidget extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: colorScheme.outline.withOpacity(0.12),
+              color: colorScheme.outline.withValues(alpha: 0.12),
               width: 1,
             ),
           ),
@@ -76,7 +76,7 @@ class ClothingItemWidget extends StatelessWidget {
                               end: Alignment.bottomCenter,
                               colors: [
                                 Colors.transparent,
-                                Colors.black.withOpacity(0.1),
+                                Colors.black.withValues(alpha: 0.1),
                               ],
                             ),
                           ),
@@ -107,7 +107,8 @@ class ClothingItemWidget extends StatelessWidget {
                         vertical: 4,
                       ),
                       decoration: BoxDecoration(
-                        color: colorScheme.primaryContainer.withOpacity(0.3),
+                        color:
+                            colorScheme.primaryContainer.withValues(alpha: 0.3),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
@@ -168,7 +169,7 @@ class ClothingItemWidget extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: colorScheme.outline.withOpacity(0.12),
+              color: colorScheme.outline.withValues(alpha: 0.12),
               width: 1,
             ),
           ),
@@ -201,7 +202,8 @@ class ClothingItemWidget extends StatelessWidget {
                         vertical: 5,
                       ),
                       decoration: BoxDecoration(
-                        color: colorScheme.primaryContainer.withOpacity(0.3),
+                        color:
+                            colorScheme.primaryContainer.withValues(alpha: 0.3),
                         borderRadius: BorderRadius.circular(16),
                       ),
                       child: Text(
@@ -341,13 +343,13 @@ class ClothingItemWidget extends StatelessWidget {
             Icon(
               Icons.checkroom_outlined,
               size: 32,
-              color: colorScheme.onSurfaceVariant.withOpacity(0.7),
+              color: colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
             ),
             const SizedBox(height: 4),
             Text(
               'No Image',
               style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    color: colorScheme.onSurfaceVariant.withOpacity(0.7),
+                    color: colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
                   ),
             ),
           ],

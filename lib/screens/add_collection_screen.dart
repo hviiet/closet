@@ -207,7 +207,7 @@ class _AddCollectionScreenState extends State<AddCollectionScreen>
             leading: CircleAvatar(
               backgroundColor: isSelected
                   ? context.theme.greenPrimary
-                  : context.theme.greenPrimary.withOpacity(0.2),
+                  : context.theme.greenPrimary.withValues(alpha: 0.2),
               child: Icon(
                 Icons.style,
                 color: isSelected ? Colors.white : context.theme.greenPrimary,

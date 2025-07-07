@@ -95,10 +95,10 @@ class _EditCollectionScreenState extends State<EditCollectionScreen>
             width: double.infinity,
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: context.theme.greenPrimary.withOpacity(0.1),
+              color: context.theme.greenPrimary.withValues(alpha: 0.1),
               border: Border(
                 bottom: BorderSide(
-                  color: context.theme.greenPrimary.withOpacity(0.3),
+                  color: context.theme.greenPrimary.withValues(alpha: 0.3),
                 ),
               ),
             ),
@@ -261,7 +261,7 @@ class _EditCollectionScreenState extends State<EditCollectionScreen>
             leading: CircleAvatar(
               backgroundColor: isSelected
                   ? context.theme.greenPrimary
-                  : context.theme.greenPrimary.withOpacity(0.2),
+                  : context.theme.greenPrimary.withValues(alpha: 0.2),
               child: Icon(
                 Icons.style,
                 color: isSelected ? Colors.white : context.theme.greenPrimary,

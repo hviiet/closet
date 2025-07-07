@@ -352,7 +352,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       child: Container(
         decoration: BoxDecoration(
           color: isSelected
-              ? theme.colorScheme.primaryContainer.withOpacity(0.3)
+              ? theme.colorScheme.primaryContainer.withValues(alpha: 0.3)
               : Colors.transparent,
           borderRadius: BorderRadius.circular(8),
         ),
@@ -464,7 +464,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: theme.colorScheme.errorContainer.withOpacity(0.1),
+                color: theme.colorScheme.errorContainer.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Icon(
@@ -517,7 +517,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: colorScheme.primaryContainer.withOpacity(0.3),
+                color: colorScheme.primaryContainer.withValues(alpha: 0.3),
                 borderRadius: BorderRadius.circular(24),
               ),
               child: Icon(
@@ -666,7 +666,7 @@ class _CategorySelectionBottomSheet extends StatelessWidget {
               width: 40,
               height: 4,
               decoration: BoxDecoration(
-                color: colorScheme.onSurfaceVariant.withOpacity(0.4),
+                color: colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -747,7 +747,7 @@ class _CategorySelectionBottomSheet extends StatelessWidget {
       margin: const EdgeInsets.symmetric(vertical: 2),
       decoration: BoxDecoration(
         color: hasSelections
-            ? colorScheme.errorContainer.withOpacity(0.3)
+            ? colorScheme.errorContainer.withValues(alpha: 0.3)
             : Colors.transparent,
         borderRadius: BorderRadius.circular(16),
       ),
@@ -814,7 +814,7 @@ class _CategorySelectionBottomSheet extends StatelessWidget {
       margin: const EdgeInsets.symmetric(vertical: 2),
       decoration: BoxDecoration(
         color: isSelected
-            ? colorScheme.primaryContainer.withOpacity(0.3)
+            ? colorScheme.primaryContainer.withValues(alpha: 0.3)
             : Colors.transparent,
         borderRadius: BorderRadius.circular(16),
       ),

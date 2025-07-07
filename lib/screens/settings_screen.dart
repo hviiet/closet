@@ -69,7 +69,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             onChanged: (value) {
                               context.read<ThemeCubit>().toggleTheme();
                             },
-                            activeColor: colorScheme.primary,
+                            activeThumbColor: colorScheme.primary,
                           ),
                         );
                       },
@@ -83,7 +83,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         onChanged: (value) {
                           // TODO: Implement notification settings
                         },
-                        activeColor: colorScheme.primary,
+                        activeThumbColor: colorScheme.primary,
                       ),
                     ),
                   ],
@@ -169,7 +169,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: colorScheme.outline.withOpacity(0.12),
+                color: colorScheme.outline.withValues(alpha: 0.12),
                 width: 1,
               ),
               color: colorScheme.surface,

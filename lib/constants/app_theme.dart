@@ -50,7 +50,7 @@ ThemeData get lightTheme => ThemeData(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
           side: BorderSide(
-            color: const Color(0xFF79747E).withOpacity(0.12),
+            color: const Color(0xFF79747E).withValues(alpha: 0.12),
             width: 1,
           ),
         ),
@@ -98,7 +98,7 @@ ThemeData get lightTheme => ThemeData(
           ),
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
           side: BorderSide(
-            color: _seedColor.withOpacity(0.12),
+            color: _seedColor.withValues(alpha: 0.12),
             width: 1,
           ),
         ),
@@ -110,7 +110,7 @@ ThemeData get lightTheme => ThemeData(
         elevation: 0,
         backgroundColor: const Color(0xFFFEFEFE),
         surfaceTintColor: _seedColor,
-        indicatorColor: _seedColor.withOpacity(0.12),
+        indicatorColor: _seedColor.withValues(alpha: 0.12),
         indicatorShape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
@@ -153,7 +153,7 @@ ThemeData get lightTheme => ThemeData(
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
           borderSide: BorderSide(
-            color: const Color(0xFF79747E).withOpacity(0.38),
+            color: const Color(0xFF79747E).withValues(alpha: 0.38),
             width: 1,
           ),
         ),
@@ -252,7 +252,7 @@ ThemeData get darkTheme => ThemeData(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
           side: BorderSide(
-            color: const Color(0xFF938F99).withOpacity(0.12),
+            color: const Color(0xFF938F99).withValues(alpha: 0.12),
             width: 1,
           ),
         ),
@@ -266,7 +266,7 @@ ThemeData get darkTheme => ThemeData(
         elevation: 0,
         backgroundColor: const Color(0xFF131316),
         surfaceTintColor: _seedColor,
-        indicatorColor: _seedColor.withOpacity(0.24),
+        indicatorColor: _seedColor.withValues(alpha: 0.24),
         indicatorShape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
@@ -309,7 +309,7 @@ ThemeData get darkTheme => ThemeData(
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
           borderSide: BorderSide(
-            color: const Color(0xFF938F99).withOpacity(0.38),
+            color: const Color(0xFF938F99).withValues(alpha: 0.38),
             width: 1,
           ),
         ),

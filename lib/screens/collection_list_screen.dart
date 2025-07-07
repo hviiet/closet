@@ -136,7 +136,7 @@ class _CollectionListScreenState extends State<CollectionListScreen> {
                       child: ListTile(
                         leading: CircleAvatar(
                           backgroundColor:
-                              context.theme.greenPrimary.withOpacity(0.2),
+                              context.theme.greenPrimary.withValues(alpha: 0.2),
                           child: Icon(
                             Icons.collections,
                             color: context.theme.greenPrimary,

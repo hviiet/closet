@@ -133,10 +133,10 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen>
             width: double.infinity,
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: context.theme.greenPrimary.withOpacity(0.1),
+              color: context.theme.greenPrimary.withValues(alpha: 0.1),
               border: Border(
                 bottom: BorderSide(
-                  color: context.theme.greenPrimary.withOpacity(0.3),
+                  color: context.theme.greenPrimary.withValues(alpha: 0.3),
                 ),
               ),
             ),
@@ -285,7 +285,8 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen>
           margin: const EdgeInsets.only(bottom: 12),
           child: ListTile(
             leading: CircleAvatar(
-              backgroundColor: context.theme.greenPrimary.withOpacity(0.2),
+              backgroundColor:
+                  context.theme.greenPrimary.withValues(alpha: 0.2),
               child: Icon(
                 Icons.style,
                 color: context.theme.greenPrimary,
