@@ -1,4 +1,4 @@
-package com.example.tcloset
+package com.hviiet.tcloset
 
 import io.flutter.embedding.android.FlutterActivity
 

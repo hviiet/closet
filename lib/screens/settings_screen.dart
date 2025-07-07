@@ -69,7 +69,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             onChanged: (value) {
                               context.read<ThemeCubit>().toggleTheme();
                             },
-                            activeThumbColor: colorScheme.primary,
+                            activeColor: colorScheme.primary,
                           ),
                         );
                       },
@@ -83,7 +83,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         onChanged: (value) {
                           // TODO: Implement notification settings
                         },
-                        activeThumbColor: colorScheme.primary,
+                        activeColor: colorScheme.primary,
                       ),
                     ),
                   ],
