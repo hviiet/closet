@@ -4,13 +4,14 @@ import 'dart:ui' as ui;
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:path/path.dart' as path;
 import 'package:uuid/uuid.dart';
-import 'file_storage_service.dart';
+import 'image_bb_service.dart';
 
 class ImageProcessingService {
-  final FileStorageService _fileStorageService;
+  final ImageBBService? _imageBBService;
   final _uuid = const Uuid();
 
-  ImageProcessingService(this._fileStorageService);
+  ImageProcessingService({ImageBBService? imghippoService})
+      : _imageBBService = imghippoService;
 
   /// Remove background from image (enhanced placeholder implementation)
   /// In a real app, this would use ML Kit or similar
@@ -27,65 +28,78 @@ class ImageProcessingService {
     }
   }
 
-  /// Compress and save image locally with UUID naming
-  Future<String> saveImageLocally(File imageFile) async {
+  /// Compress image and upload to ImgBB.
+  Future<String> saveImage(File imageFile) async {
     try {
       final compressedFile = await _compressImage(imageFile);
-      return await _fileStorageService.saveImage(compressedFile);
+      if (_imageBBService == null) {
+        throw Exception('ImgBB is not configured. Provide IMG_BB_KEY.');
+      }
+      final url = await _imageBBService.uploadImage(compressedFile);
+      return url;
     } catch (e) {
-      throw Exception('Failed to save image: $e');
+      throw Exception('Failed to process and upload image: $e');
     }
   }
 
   /// Enhanced compression with multiple quality options
   Future<File> _compressImage(File file,
       {ImageQuality quality = ImageQuality.high}) async {
-    final String targetPath = path.join(
-      path.dirname(file.path),
-      '${_uuid.v4()}_compressed.jpg',
-    );
+    try {
+      final String targetPath = path.join(
+        path.dirname(file.path),
+        '${_uuid.v4()}_compressed.jpg',
+      );
 
-    int qualityValue;
-    int maxWidth;
-    int maxHeight;
+      int qualityValue;
+      int maxWidth;
+      int maxHeight;
 
-    switch (quality) {
-      case ImageQuality.low:
-        qualityValue = 60;
-        maxWidth = 600;
-        maxHeight = 600;
-        break;
-      case ImageQuality.medium:
-        qualityValue = 75;
-        maxWidth = 800;
-        maxHeight = 800;
-        break;
-      case ImageQuality.high:
-        qualityValue = 85;
-        maxWidth = 1200;
-        maxHeight = 1200;
-        break;
-      case ImageQuality.original:
-        qualityValue = 95;
-        maxWidth = 1920;
-        maxHeight = 1920;
-        break;
+      switch (quality) {
+        case ImageQuality.low:
+          qualityValue = 60;
+          maxWidth = 600;
+          maxHeight = 600;
+          break;
+        case ImageQuality.medium:
+          qualityValue = 75;
+          maxWidth = 800;
+          maxHeight = 800;
+          break;
+        case ImageQuality.high:
+          qualityValue = 85;
+          maxWidth = 1200;
+          maxHeight = 1200;
+          break;
+        case ImageQuality.original:
+          qualityValue = 95;
+          maxWidth = 1920;
+          maxHeight = 1920;
+          break;
+      }
+
+      final compressedFile = await FlutterImageCompress.compressAndGetFile(
+        file.absolute.path,
+        targetPath,
+        quality: qualityValue,
+        minWidth: maxWidth,
+        minHeight: maxHeight,
+        format: CompressFormat.jpeg,
+      );
+
+      if (compressedFile == null) {
+        // Fallback to original file if compression yields null
+        return file;
+      }
+
+      return File(compressedFile.path);
+    } on UnimplementedError {
+      // Plugin not implemented on this platform (e.g., Linux/desktop). Use original file.
+      return file;
+    } catch (_) {
+      // Any other compression failure: use original file.
+      return file;
     }
-
-    final compressedFile = await FlutterImageCompress.compressAndGetFile(
-      file.absolute.path,
-      targetPath,
-      quality: qualityValue,
-      minWidth: maxWidth,
-      minHeight: maxHeight,
-      format: CompressFormat.jpeg,
-    );
-
-    if (compressedFile == null) {
-      throw Exception('Failed to compress image');
-    }
-
-    return File(compressedFile.path);
   }
 
   /// Simulate background removal with image processing
@@ -100,11 +114,19 @@ class ImageProcessingService {
       // Apply some basic image enhancement to simulate processing
       final enhancedFile = await _enhanceImage(processedFile);
 
-      return await _fileStorageService.saveImage(enhancedFile);
+      if (_imageBBService != null) {
+        final url = await _imageBBService.uploadImage(enhancedFile);
+        return url;
+      }
+      throw Exception('ImgBB is not configured. Provide IMG_BB_KEY.');
     } catch (e) {
       // Fallback to regular compression if processing fails
       final fallbackFile = await _compressImage(originalFile);
-      return await _fileStorageService.saveImage(fallbackFile);
+      if (_imageBBService != null) {
+        final url = await _imageBBService.uploadImage(fallbackFile);
+        return url;
+      }
+      throw Exception('ImgBB is not configured. Provide IMG_BB_KEY.');
     }
   }
 
@@ -119,6 +141,12 @@ class ImageProcessingService {
   Future<Uint8List?> getOptimizedImageBytes(String imagePath,
       {ImageSize size = ImageSize.medium}) async {
     try {
+      final isRemote =
+          imagePath.startsWith('http://') || imagePath.startsWith('https://');
+      if (isRemote) {
+        // For remote URLs, skip local optimization and return null; use Image.network directly in UI
+        return null;
+      }
       final file = File(imagePath);
       if (!await file.exists()) return null;
 
@@ -185,9 +213,9 @@ class ImageProcessingService {
         // if (removeBackground) {
         //   processedPath = await removeBackground(imageFile.path);
         // } else {
-        //   processedPath = await saveImageLocally(imageFile);
+        //   processedPath = await saveImage(imageFile);
         // }
-        processedPath = await saveImageLocally(imageFile);
+        processedPath = await saveImage(imageFile);
 
         processedPaths.add(processedPath);
       } catch (e) {

@@ -1,10 +1,8 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../models/models.dart';
 import '../bloc/clothing_bloc.dart';
 import '../bloc/clothing_event.dart';
-import '../services/file_storage_service.dart';
 
 class ClothingItemWidget extends StatelessWidget {
   final ClothingItem item;
@@ -291,33 +289,20 @@ class ClothingItemWidget extends StatelessWidget {
   }
 
   Widget _buildModernImage(context) {
-    return Builder(
-      builder: (context) {
-        return FutureBuilder<bool>(
-          future:
-              context.read<FileStorageService>().imageExists(item.imagePath),
-          builder: (context, snapshot) {
-            if (snapshot.data == true) {
-              return Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                clipBehavior: Clip.antiAlias,
-                child: Image.file(
-                  File(item.imagePath),
-                  fit: BoxFit.cover,
-                  width: double.infinity,
-                  height: double.infinity,
-                  errorBuilder: (context, error, stackTrace) {
-                    return _buildModernPlaceholder(context);
-                  },
-                ),
-              );
-            }
-            return _buildModernPlaceholder(context);
-          },
-        );
-      },
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: Image.network(
+        item.imagePath,
+        fit: BoxFit.cover,
+        width: double.infinity,
+        height: double.infinity,
+        errorBuilder: (context, error, stackTrace) {
+          return _buildModernPlaceholder(context);
+        },
+      ),
     );
   }
 

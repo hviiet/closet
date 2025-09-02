@@ -201,6 +201,7 @@ class _CollectionListScreenState extends State<CollectionListScreen> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
+        heroTag: 'collection_fab',
         onPressed: () async {
           final result = await Navigator.push(
             context,

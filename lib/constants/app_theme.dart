@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'app_colors.dart';
 
 // Material Design 3 Seed Colors for TCloset
@@ -26,22 +25,17 @@ ThemeData get lightTheme => ThemeData(
       textTheme: _buildTextTheme(Brightness.light),
 
       // Enhanced App Bar Theme
-      appBarTheme: AppBarTheme(
+      appBarTheme: const AppBarTheme(
         elevation: 0,
         scrolledUnderElevation: 1,
-        backgroundColor: const Color(0xFFFEFEFE),
+        backgroundColor: Color(0xFFFEFEFE),
         surfaceTintColor: _seedColor,
-        foregroundColor: const Color(0xFF1D1B20),
-        titleTextStyle: GoogleFonts.inter(
-          fontSize: 22,
-          fontWeight: FontWeight.w600,
-          color: const Color(0xFF1D1B20),
-        ),
-        iconTheme: const IconThemeData(
+        foregroundColor: Color(0xFF1D1B20),
+        iconTheme: IconThemeData(
           color: Color(0xFF49454F),
           size: 24,
         ),
-        shape: const RoundedRectangleBorder(),
+        shape: RoundedRectangleBorder(),
       ),
 
       // Modern Card Theme
@@ -114,20 +108,6 @@ ThemeData get lightTheme => ThemeData(
         indicatorShape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
-        labelTextStyle: WidgetStateProperty.resolveWith((states) {
-          if (states.contains(WidgetState.selected)) {
-            return GoogleFonts.inter(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-              color: _seedColor,
-            );
-          }
-          return GoogleFonts.inter(
-            fontSize: 12,
-            fontWeight: FontWeight.w500,
-            color: const Color(0xFF49454F),
-          );
-        }),
         iconTheme: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
             return const IconThemeData(
@@ -174,10 +154,6 @@ ThemeData get lightTheme => ThemeData(
         pressElevation: 1,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
-        ),
-        labelStyle: GoogleFonts.inter(
-          fontSize: 14,
-          fontWeight: FontWeight.w500,
         ),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       ),
@@ -228,22 +204,17 @@ ThemeData get darkTheme => ThemeData(
       textTheme: _buildTextTheme(Brightness.dark),
 
       // Enhanced App Bar Theme for Dark Mode
-      appBarTheme: AppBarTheme(
+      appBarTheme: const AppBarTheme(
         elevation: 0,
         scrolledUnderElevation: 1,
-        backgroundColor: const Color(0xFF131316),
+        backgroundColor: Color(0xFF131316),
         surfaceTintColor: _seedColor,
-        foregroundColor: const Color(0xFFE6E0E9),
-        titleTextStyle: GoogleFonts.inter(
-          fontSize: 22,
-          fontWeight: FontWeight.w600,
-          color: const Color(0xFFE6E0E9),
-        ),
-        iconTheme: const IconThemeData(
+        foregroundColor: Color(0xFFE6E0E9),
+        iconTheme: IconThemeData(
           color: Color(0xFFCAC4D0),
           size: 24,
         ),
-        shape: const RoundedRectangleBorder(),
+        shape: RoundedRectangleBorder(),
       ),
 
       // Modern Card Theme for Dark Mode
@@ -270,20 +241,6 @@ ThemeData get darkTheme => ThemeData(
         indicatorShape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
-        labelTextStyle: WidgetStateProperty.resolveWith((states) {
-          if (states.contains(WidgetState.selected)) {
-            return GoogleFonts.inter(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-              color: const Color(0xFF4F9548),
-            );
-          }
-          return GoogleFonts.inter(
-            fontSize: 12,
-            fontWeight: FontWeight.w500,
-            color: const Color(0xFFCAC4D0),
-          );
-        }),
         iconTheme: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
             return const IconThemeData(
@@ -335,122 +292,7 @@ TextTheme _buildTextTheme(Brightness brightness) {
       ? const Color(0xFF1D1B20)
       : const Color(0xFFE6E0E9);
 
-  return TextTheme(
-    // Display styles - for hero content
-    displayLarge: GoogleFonts.inter(
-      fontSize: 57,
-      fontWeight: FontWeight.w400,
-      letterSpacing: -0.25,
-      height: 1.12,
-      color: textColor,
-    ),
-    displayMedium: GoogleFonts.inter(
-      fontSize: 45,
-      fontWeight: FontWeight.w400,
-      letterSpacing: 0,
-      height: 1.16,
-      color: textColor,
-    ),
-    displaySmall: GoogleFonts.inter(
-      fontSize: 36,
-      fontWeight: FontWeight.w400,
-      letterSpacing: 0,
-      height: 1.22,
-      color: textColor,
-    ),
-
-    // Headline styles - for section headers
-    headlineLarge: GoogleFonts.inter(
-      fontSize: 32,
-      fontWeight: FontWeight.w600,
-      letterSpacing: 0,
-      height: 1.25,
-      color: textColor,
-    ),
-    headlineMedium: GoogleFonts.inter(
-      fontSize: 28,
-      fontWeight: FontWeight.w600,
-      letterSpacing: 0,
-      height: 1.29,
-      color: textColor,
-    ),
-    headlineSmall: GoogleFonts.inter(
-      fontSize: 24,
-      fontWeight: FontWeight.w600,
-      letterSpacing: 0,
-      height: 1.33,
-      color: textColor,
-    ),
-
-    // Title styles - for component headers
-    titleLarge: GoogleFonts.inter(
-      fontSize: 22,
-      fontWeight: FontWeight.w600,
-      letterSpacing: 0,
-      height: 1.27,
-      color: textColor,
-    ),
-    titleMedium: GoogleFonts.inter(
-      fontSize: 16,
-      fontWeight: FontWeight.w600,
-      letterSpacing: 0.15,
-      height: 1.50,
-      color: textColor,
-    ),
-    titleSmall: GoogleFonts.inter(
-      fontSize: 14,
-      fontWeight: FontWeight.w600,
-      letterSpacing: 0.1,
-      height: 1.43,
-      color: textColor,
-    ),
-
-    // Body styles - for regular content
-    bodyLarge: GoogleFonts.inter(
-      fontSize: 16,
-      fontWeight: FontWeight.w400,
-      letterSpacing: 0.5,
-      height: 1.50,
-      color: textColor,
-    ),
-    bodyMedium: GoogleFonts.inter(
-      fontSize: 14,
-      fontWeight: FontWeight.w400,
-      letterSpacing: 0.25,
-      height: 1.43,
-      color: textColor,
-    ),
-    bodySmall: GoogleFonts.inter(
-      fontSize: 12,
-      fontWeight: FontWeight.w400,
-      letterSpacing: 0.4,
-      height: 1.33,
-      color: textColor,
-    ),
-
-    // Label styles - for buttons and tags
-    labelLarge: GoogleFonts.inter(
-      fontSize: 14,
-      fontWeight: FontWeight.w600,
-      letterSpacing: 0.1,
-      height: 1.43,
-      color: textColor,
-    ),
-    labelMedium: GoogleFonts.inter(
-      fontSize: 12,
-      fontWeight: FontWeight.w600,
-      letterSpacing: 0.5,
-      height: 1.33,
-      color: textColor,
-    ),
-    labelSmall: GoogleFonts.inter(
-      fontSize: 11,
-      fontWeight: FontWeight.w600,
-      letterSpacing: 0.5,
-      height: 1.45,
-      color: textColor,
-    ),
-  );
+  return const TextTheme();
 }
 
 extension ExtendedTheme on BuildContext {

@@ -9,8 +9,9 @@ import 'models/collection.dart';
 import 'repositories/hive_clothing_repository.dart';
 import 'repositories/hive_outfit_repository.dart';
 import 'repositories/hive_collection_repository.dart';
-import 'services/file_storage_service.dart';
 import 'services/image_processing_service.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'services/image_bb_service.dart';
 import 'bloc/clothing_bloc.dart';
 import 'bloc/clothing_event.dart';
 import 'cubit/filter_cubit.dart';
@@ -32,6 +33,8 @@ void main() async {
   Hive.registerAdapter(OutfitSetAdapter());
   Hive.registerAdapter(CollectionAdapter());
 
+  await dotenv.load(fileName: '.env');
+
   // Load initial theme state
   final initialTheme = await ThemeCubit.getInitialTheme();
 
@@ -47,13 +50,13 @@ class TClosetApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiRepositoryProvider(
       providers: [
-        RepositoryProvider<FileStorageService>(
-          create: (context) => FileStorageService(),
-        ),
         RepositoryProvider<ImageProcessingService>(
-          create: (context) => ImageProcessingService(
-            context.read<FileStorageService>(),
-          ),
+          create: (context) {
+            return ImageProcessingService(
+              imghippoService:
+                  ImageBBService(apiKey: dotenv.env['IMG_BB_KEY'] ?? ''),
+            );
+          },
         ),
         RepositoryProvider<HiveClothingRepository>(
           create: (context) => HiveClothingRepository(),

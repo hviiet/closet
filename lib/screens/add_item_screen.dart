@@ -194,8 +194,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
     try {
       // Process and save image
       final imageProcessingService = context.read<ImageProcessingService>();
-      final imagePath =
-          await imageProcessingService.saveImageLocally(_selectedImage!);
+      final imagePath = await imageProcessingService.saveImage(_selectedImage!);
 
       // Create clothing item
       final item = ClothingItem(
@@ -218,6 +217,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error saving item: $e')),
         );
+        print('Error saving item: $e');
       }
     }
   }

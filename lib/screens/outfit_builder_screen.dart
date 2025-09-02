@@ -115,6 +115,7 @@ class _OutfitBuilderScreenState extends State<OutfitBuilderScreen>
           if (outfitState.selectedItems.isEmpty) return const SizedBox();
 
           return FloatingActionButton.extended(
+            heroTag: 'outfit_fab',
             onPressed: () {
               context.read<OutfitCubit>().clearSelection();
             },
