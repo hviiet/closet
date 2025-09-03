@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../models/models.dart';
-import '../repositories/hive_outfit_repository.dart';
-import '../repositories/hive_clothing_repository.dart';
+import '../repositories/supabase_outfit_repository.dart';
+import '../repositories/supabase_clothing_repository.dart';
 import '../cubit/outfit_cubit.dart';
 import '../widgets/clothing_item_widget.dart';
 import '../constants/app_theme.dart';
@@ -20,10 +20,12 @@ class _OutfitListScreenState extends State<OutfitListScreen> {
   List<ClothingItem> _allClothingItems = [];
   bool _isLoading = true;
   String? _errorMessage;
+  late final SupabaseOutfitRepository _outfitRepository;
 
   @override
   void initState() {
     super.initState();
+    _outfitRepository = context.read<SupabaseOutfitRepository>();
     _loadOutfits();
   }
 
@@ -34,8 +36,8 @@ class _OutfitListScreenState extends State<OutfitListScreen> {
         _errorMessage = null;
       });
 
-      final outfitRepository = context.read<HiveOutfitRepository>();
-      final clothingRepository = context.read<HiveClothingRepository>();
+      final outfitRepository = context.read<SupabaseOutfitRepository>();
+      final clothingRepository = context.read<SupabaseClothingRepository>();
 
       final outfits = await outfitRepository.getAllOutfits();
       final clothingItems = await clothingRepository.getAllItems();
@@ -59,38 +61,119 @@ class _OutfitListScreenState extends State<OutfitListScreen> {
     final colorScheme = theme.colorScheme;
 
     return Scaffold(
-      body: CustomScrollView(
-        slivers: [
-          // Modern App Bar with enhanced styling (matching home screen)
-          SliverAppBar.large(
-            title: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'My Outfits',
-                  style: theme.textTheme.headlineMedium?.copyWith(
-                    fontWeight: FontWeight.w700,
-                    color: colorScheme.onSurface,
+      body: RefreshIndicator(
+        onRefresh: _loadOutfits,
+        child: CustomScrollView(
+          slivers: [
+            // Modern App Bar with enhanced styling (matching home screen)
+            SliverAppBar.large(
+              title: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'My Outfits',
+                    style: theme.textTheme.headlineMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                      color: colorScheme.onSurface,
+                    ),
                   ),
-                ),
-                Text(
-                  'Create and manage your outfits',
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: colorScheme.onSurfaceVariant,
+                  Text(
+                    'Create and manage your outfits',
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                    ),
                   ),
+                ],
+              ),
+              backgroundColor: colorScheme.surface,
+              surfaceTintColor: colorScheme.surfaceTint,
+              expandedHeight: 120,
+              floating: false,
+              pinned: true,
+              snap: false,
+              elevation: 0,
+              scrolledUnderElevation: 1,
+              actions: [
+                IconButton(
+                  onPressed: () async {
+                    final result = await Navigator.push<bool>(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const OutfitBuilderScreen(),
+                      ),
+                    );
+                    if (result == true) {
+                      _loadOutfits();
+                    }
+                  },
+                  icon: const Icon(Icons.add),
+                  tooltip: 'Create New Outfit',
                 ),
               ],
             ),
-            backgroundColor: colorScheme.surface,
-            surfaceTintColor: colorScheme.surfaceTint,
-            expandedHeight: 120,
-            floating: false,
-            pinned: true,
-            snap: false,
-            elevation: 0,
-            scrolledUnderElevation: 1,
-            actions: [
-              IconButton(
+
+            // Content Section
+            _buildBody(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBody() {
+    if (_isLoading) {
+      return const SliverFillRemaining(
+        child: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    if (_errorMessage != null) {
+      return SliverFillRemaining(
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.error_outline,
+                size: 64,
+                color: context.theme.error,
+              ),
+              const SizedBox(height: 16),
+              Text('Error loading outfits: $_errorMessage'),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: _loadOutfits,
+                child: const Text('Retry'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    if (_outfits.isEmpty) {
+      return SliverFillRemaining(
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.style_outlined,
+                size: 64,
+                color: Colors.grey[400],
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'No outfits yet',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'Create your first outfit to get started',
+                style: TextStyle(color: Colors.grey),
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton.icon(
                 onPressed: () async {
                   final result = await Navigator.push<bool>(
                     context,
@@ -103,97 +186,29 @@ class _OutfitListScreenState extends State<OutfitListScreen> {
                   }
                 },
                 icon: const Icon(Icons.add),
-                tooltip: 'Create New Outfit',
+                label: const Text('Create Outfit'),
               ),
             ],
           ),
-
-          // Content Section
-          SliverToBoxAdapter(
-            child: _buildBody(),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildBody() {
-    if (_isLoading) {
-      return const Center(child: CircularProgressIndicator());
-    }
-
-    if (_errorMessage != null) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.error_outline,
-              size: 64,
-              color: context.theme.error,
-            ),
-            const SizedBox(height: 16),
-            Text('Error loading outfits: $_errorMessage'),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: _loadOutfits,
-              child: const Text('Retry'),
-            ),
-          ],
         ),
       );
     }
 
-    if (_outfits.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.style_outlined,
-              size: 64,
-              color: Colors.grey[400],
-            ),
-            const SizedBox(height: 16),
-            const Text(
-              'No outfits yet',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              'Create your first outfit to get started',
-              style: TextStyle(color: Colors.grey),
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton.icon(
-              onPressed: () async {
-                final result = await Navigator.push<bool>(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const OutfitBuilderScreen(),
-                  ),
-                );
-                if (result == true) {
-                  _loadOutfits();
-                }
-              },
-              icon: const Icon(Icons.add),
-              label: const Text('Create Outfit'),
-            ),
-          ],
+    return SliverPadding(
+      padding: const EdgeInsets.all(16),
+      sliver: SliverList(
+        delegate: SliverChildBuilderDelegate(
+          (context, index) {
+            final outfit = _outfits[index];
+            return Padding(
+              padding: EdgeInsets.only(
+                bottom: index < _outfits.length - 1 ? 16.0 : 0.0,
+              ),
+              child: _buildOutfitCard(outfit),
+            );
+          },
+          childCount: _outfits.length,
         ),
-      );
-    }
-
-    return RefreshIndicator(
-      onRefresh: _loadOutfits,
-      child: ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: _outfits.length,
-        itemBuilder: (context, index) {
-          final outfit = _outfits[index];
-          return _buildOutfitCard(outfit);
-        },
       ),
     );
   }
@@ -478,16 +493,17 @@ class _OutfitListScreenState extends State<OutfitListScreen> {
     );
 
     if (confirmed == true) {
+      final wasMounted = mounted;
       try {
-        await context.read<HiveOutfitRepository>().deleteOutfit(outfit.id);
-        if (mounted) {
+        await _outfitRepository.deleteOutfit(outfit.id);
+        if (wasMounted && mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Outfit deleted successfully')),
           );
           _loadOutfits();
         }
       } catch (e) {
-        if (mounted) {
+        if (wasMounted && mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Error deleting outfit: $e')),
           );

@@ -7,7 +7,7 @@ import '../bloc/clothing_event.dart';
 import '../bloc/clothing_state.dart';
 import '../cubit/outfit_cubit.dart';
 import '../widgets/clothing_item_widget.dart';
-import '../repositories/hive_outfit_repository.dart';
+import '../repositories/supabase_outfit_repository.dart';
 import '../constants/app_theme.dart';
 
 class OutfitBuilderScreen extends StatefulWidget {
@@ -498,7 +498,7 @@ class _OutfitBuilderScreenState extends State<OutfitBuilderScreen>
     );
 
     try {
-      final outfitRepository = context.read<HiveOutfitRepository>();
+      final outfitRepository = context.read<SupabaseOutfitRepository>();
       if (outfitState.isEditing) {
         await outfitRepository.updateOutfit(outfit);
         if (mounted) {

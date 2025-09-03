@@ -10,8 +10,8 @@ class ImageProcessingService {
   final ImageBBService? _imageBBService;
   final _uuid = const Uuid();
 
-  ImageProcessingService({ImageBBService? imghippoService})
-      : _imageBBService = imghippoService;
+  ImageProcessingService({ImageBBService? imageBBService})
+      : _imageBBService = imageBBService;
 
   /// Remove background from image (enhanced placeholder implementation)
   /// In a real app, this would use ML Kit or similar

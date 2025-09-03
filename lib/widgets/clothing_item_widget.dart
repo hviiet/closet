@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../models/models.dart';
 import '../bloc/clothing_bloc.dart';
 import '../bloc/clothing_event.dart';
@@ -288,21 +289,38 @@ class ClothingItemWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildModernImage(context) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
+  Widget _buildModernImage(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return CachedNetworkImage(
+      imageUrl: item.imagePath,
+      imageBuilder: (context, imageProvider) => Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          image: DecorationImage(
+            image: imageProvider,
+            fit: BoxFit.cover,
+          ),
+        ),
       ),
-      clipBehavior: Clip.antiAlias,
-      child: Image.network(
-        item.imagePath,
-        fit: BoxFit.cover,
-        width: double.infinity,
-        height: double.infinity,
-        errorBuilder: (context, error, stackTrace) {
-          return _buildModernPlaceholder(context);
-        },
+      placeholder: (context, url) => Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          color: colorScheme.surfaceContainerHighest,
+        ),
+        child: Center(
+          child: CircularProgressIndicator(
+            strokeWidth: 2,
+            valueColor: AlwaysStoppedAnimation<Color>(
+              colorScheme.primary.withValues(alpha: 0.7),
+            ),
+          ),
+        ),
       ),
+      errorWidget: (context, url, error) => _buildModernPlaceholder(context),
+      fit: BoxFit.cover,
+      width: double.infinity,
+      height: double.infinity,
     );
   }
 

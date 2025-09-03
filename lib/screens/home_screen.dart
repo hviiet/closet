@@ -267,32 +267,36 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           ),
 
           // Enhanced Content Section
-          SliverToBoxAdapter(
-            child: BlocBuilder<ClothingBloc, ClothingState>(
-              builder: (context, clothingState) {
-                if (clothingState.status == ClothingStatus.loading) {
-                  return _buildLoadingState(context);
-                }
-
-                if (clothingState.status == ClothingStatus.failure) {
-                  return _buildErrorState(context, clothingState.errorMessage);
-                }
-
-                return BlocBuilder<FilterCubit, FilterState>(
-                  builder: (context, filterState) {
-                    final filteredItems = context
-                        .read<FilterCubit>()
-                        .applyFilters(clothingState.items);
-
-                    if (filteredItems.isEmpty) {
-                      return _buildEmptyState(context, filterState);
-                    }
-
-                    return _buildItemsGrid(context, filteredItems, filterState);
-                  },
+          BlocBuilder<ClothingBloc, ClothingState>(
+            builder: (context, clothingState) {
+              if (clothingState.status == ClothingStatus.loading) {
+                return SliverToBoxAdapter(
+                  child: _buildLoadingState(context),
                 );
-              },
-            ),
+              }
+
+              if (clothingState.status == ClothingStatus.failure) {
+                return SliverToBoxAdapter(
+                  child: _buildErrorState(context, clothingState.errorMessage),
+                );
+              }
+
+              return BlocBuilder<FilterCubit, FilterState>(
+                builder: (context, filterState) {
+                  final filteredItems = context
+                      .read<FilterCubit>()
+                      .applyFilters(clothingState.items);
+
+                  if (filteredItems.isEmpty) {
+                    return SliverToBoxAdapter(
+                      child: _buildEmptyState(context, filterState),
+                    );
+                  }
+
+                  return _buildItemsGrid(context, filteredItems, filterState);
+                },
+              );
+            },
           ),
         ],
       ),
@@ -586,40 +590,44 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     FilterState filterState,
   ) {
     if (filterState.isGridView) {
-      return Container(
+      return SliverPadding(
         padding: const EdgeInsets.all(16),
-        child: GridView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
+        sliver: SliverGrid(
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
             crossAxisSpacing: 12,
             mainAxisSpacing: 12,
             childAspectRatio: 0.75,
           ),
-          itemCount: items.length,
-          itemBuilder: (context, index) {
-            return ClothingItemWidget(
-              item: items[index],
-              isGridView: true,
-            );
-          },
+          delegate: SliverChildBuilderDelegate(
+            (context, index) {
+              return ClothingItemWidget(
+                item: items[index],
+                isGridView: true,
+              );
+            },
+            childCount: items.length,
+          ),
         ),
       );
     } else {
-      return Container(
+      return SliverPadding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        child: ListView.separated(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: items.length,
-          separatorBuilder: (context, index) => const SizedBox(height: 8),
-          itemBuilder: (context, index) {
-            return ClothingItemWidget(
-              item: items[index],
-              isGridView: false,
-            );
-          },
+        sliver: SliverList(
+          delegate: SliverChildBuilderDelegate(
+            (context, index) {
+              return Padding(
+                padding: EdgeInsets.only(
+                  bottom: index < items.length - 1 ? 8.0 : 0.0,
+                ),
+                child: ClothingItemWidget(
+                  item: items[index],
+                  isGridView: false,
+                ),
+              );
+            },
+            childCount: items.length,
+          ),
         ),
       );
     }

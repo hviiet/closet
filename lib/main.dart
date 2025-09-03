@@ -1,16 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-
-import 'models/hive_adapters.dart';
-import 'models/clothing_item.dart';
-import 'models/outfit_set.dart';
-import 'models/collection.dart';
-import 'repositories/hive_clothing_repository.dart';
-import 'repositories/hive_outfit_repository.dart';
-import 'repositories/hive_collection_repository.dart';
-import 'services/image_processing_service.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+
+import 'repositories/supabase_clothing_repository.dart';
+import 'repositories/supabase_outfit_repository.dart';
+import 'repositories/supabase_collection_repository.dart';
+import 'services/image_processing_service.dart';
 import 'services/image_bb_service.dart';
 import 'bloc/clothing_bloc.dart';
 import 'bloc/clothing_event.dart';
@@ -18,22 +14,22 @@ import 'cubit/filter_cubit.dart';
 import 'cubit/outfit_cubit.dart';
 import 'cubit/collection_cubit.dart';
 import 'cubit/theme_cubit.dart';
+import 'cubit/auth_cubit.dart';
 import 'constants/app_theme.dart';
 import 'screens/main_navigation_screen.dart';
+import 'screens/auth_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize Hive
-  await Hive.initFlutter();
-
-  // Register adapters
-  Hive.registerAdapter(ClothingCategoryAdapter());
-  Hive.registerAdapter(ClothingItemAdapter());
-  Hive.registerAdapter(OutfitSetAdapter());
-  Hive.registerAdapter(CollectionAdapter());
-
+  // Load environment variables
   await dotenv.load(fileName: '.env');
+
+  // Initialize Supabase
+  await Supabase.initialize(
+    url: dotenv.env['SUPABASE_URL'] ?? '',
+    anonKey: dotenv.env['SUPABASE_ANON_KEY'] ?? '',
+  );
 
   // Load initial theme state
   final initialTheme = await ThemeCubit.getInitialTheme();
@@ -53,38 +49,25 @@ class TClosetApp extends StatelessWidget {
         RepositoryProvider<ImageProcessingService>(
           create: (context) {
             return ImageProcessingService(
-              imghippoService:
+              imageBBService:
                   ImageBBService(apiKey: dotenv.env['IMG_BB_KEY'] ?? ''),
             );
           },
         ),
-        RepositoryProvider<HiveClothingRepository>(
-          create: (context) => HiveClothingRepository(),
+        RepositoryProvider<SupabaseClothingRepository>(
+          create: (context) => SupabaseClothingRepository(),
         ),
-        RepositoryProvider<HiveOutfitRepository>(
-          create: (context) => HiveOutfitRepository(),
+        RepositoryProvider<SupabaseOutfitRepository>(
+          create: (context) => SupabaseOutfitRepository(),
         ),
-        RepositoryProvider<HiveCollectionRepository>(
-          create: (context) => HiveCollectionRepository(),
+        RepositoryProvider<SupabaseCollectionRepository>(
+          create: (context) => SupabaseCollectionRepository(),
         ),
       ],
       child: MultiBlocProvider(
         providers: [
-          BlocProvider<ClothingBloc>(
-            create: (context) => ClothingBloc(
-              clothingRepository: context.read<HiveClothingRepository>(),
-            )..add(LoadClothingItems()),
-          ),
-          BlocProvider<FilterCubit>(
-            create: (context) => FilterCubit(),
-          ),
-          BlocProvider<OutfitCubit>(
-            create: (context) => OutfitCubit(),
-          ),
-          BlocProvider<CollectionCubit>(
-            create: (context) => CollectionCubit(
-              context.read<HiveCollectionRepository>(),
-            ),
+          BlocProvider<AuthCubit>(
+            create: (context) => AuthCubit(),
           ),
           BlocProvider<ThemeCubit>(
             create: (context) => ThemeCubit(initialTheme),
@@ -92,13 +75,38 @@ class TClosetApp extends StatelessWidget {
         ],
         child: BlocBuilder<ThemeCubit, bool>(
           builder: (context, isDarkMode) {
-            return MaterialApp(
-              title: 'TCloset',
-              theme: lightTheme,
-              darkTheme: darkTheme,
-              themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
-              debugShowCheckedModeBanner: false,
-              home: const AppInitializer(),
+            return MultiBlocProvider(
+              providers: [
+                BlocProvider<ClothingBloc>(
+                  create: (context) => ClothingBloc(
+                    clothingRepository:
+                        context.read<SupabaseClothingRepository>(),
+                  )..add(LoadClothingItems()),
+                ),
+                BlocProvider<FilterCubit>(
+                  create: (context) => FilterCubit(),
+                ),
+                BlocProvider<OutfitCubit>(
+                  create: (context) => OutfitCubit(),
+                ),
+                BlocProvider<CollectionCubit>(
+                  create: (context) => CollectionCubit(
+                    context.read<SupabaseCollectionRepository>(),
+                  ),
+                ),
+              ],
+              child: MaterialApp(
+                title: 'TCloset',
+                theme: lightTheme,
+                darkTheme: darkTheme,
+                themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
+                debugShowCheckedModeBanner: false,
+                routes: {
+                  '/': (context) => const AuthWrapper(),
+                  '/auth': (context) => const AuthScreen(),
+                  '/main': (context) => const MainWrapper(),
+                },
+              ),
             );
           },
         ),
@@ -107,66 +115,43 @@ class TClosetApp extends StatelessWidget {
   }
 }
 
-class AppInitializer extends StatefulWidget {
-  const AppInitializer({super.key});
-
-  @override
-  State<AppInitializer> createState() => _AppInitializerState();
-}
-
-class _AppInitializerState extends State<AppInitializer> {
-  bool _isInitialized = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _initializeApp();
-  }
-
-  Future<void> _initializeApp() async {
-    try {
-      // Store repositories before async operations
-      final clothingRepo = context.read<HiveClothingRepository>();
-      final outfitRepo = context.read<HiveOutfitRepository>();
-      final collectionRepo = context.read<HiveCollectionRepository>();
-
-      // Initialize repositories
-      await clothingRepo.init();
-      await outfitRepo.init();
-      await collectionRepo.init();
-
-      if (mounted) {
-        setState(() {
-          _isInitialized = true;
-        });
-      }
-    } catch (e) {
-      // Handle initialization error
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Initialization failed: $e')),
-        );
-      }
-    }
-  }
+class AuthWrapper extends StatelessWidget {
+  const AuthWrapper({super.key});
 
   @override
   Widget build(BuildContext context) {
-    if (!_isInitialized) {
-      return const Scaffold(
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              CircularProgressIndicator(),
-              SizedBox(height: 16),
-              Text('Initializing TCloset...'),
-            ],
-          ),
-        ),
-      );
-    }
+    return BlocBuilder<AuthCubit, AppAuthState>(
+      builder: (context, state) {
+        if (state.isLoading) {
+          return const Scaffold(
+            body: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircularProgressIndicator(),
+                  SizedBox(height: 16),
+                  Text('Loading...'),
+                ],
+              ),
+            ),
+          );
+        }
 
+        if (state.isAuthenticated) {
+          return const MainWrapper();
+        } else {
+          return const AuthScreen();
+        }
+      },
+    );
+  }
+}
+
+class MainWrapper extends StatelessWidget {
+  const MainWrapper({super.key});
+
+  @override
+  Widget build(BuildContext context) {
     return const MainNavigationScreen();
   }
 }

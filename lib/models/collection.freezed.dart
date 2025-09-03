@@ -20,13 +20,12 @@ Collection _$CollectionFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$Collection {
-  @HiveField(0)
   String get id => throw _privateConstructorUsedError;
-  @HiveField(1)
+  @JsonKey(name: 'item_ids')
   List<String> get itemIds => throw _privateConstructorUsedError;
-  @HiveField(2)
+  @JsonKey(name: 'outfit_ids')
   List<String> get outfitIds => throw _privateConstructorUsedError;
-  @HiveField(3)
+  @JsonKey(name: 'date_created')
   DateTime get dateCreated => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -42,10 +41,10 @@ abstract class $CollectionCopyWith<$Res> {
       _$CollectionCopyWithImpl<$Res, Collection>;
   @useResult
   $Res call(
-      {@HiveField(0) String id,
-      @HiveField(1) List<String> itemIds,
-      @HiveField(2) List<String> outfitIds,
-      @HiveField(3) DateTime dateCreated});
+      {String id,
+      @JsonKey(name: 'item_ids') List<String> itemIds,
+      @JsonKey(name: 'outfit_ids') List<String> outfitIds,
+      @JsonKey(name: 'date_created') DateTime dateCreated});
 }
 
 /// @nodoc
@@ -96,10 +95,10 @@ abstract class _$$CollectionImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {@HiveField(0) String id,
-      @HiveField(1) List<String> itemIds,
-      @HiveField(2) List<String> outfitIds,
-      @HiveField(3) DateTime dateCreated});
+      {String id,
+      @JsonKey(name: 'item_ids') List<String> itemIds,
+      @JsonKey(name: 'outfit_ids') List<String> outfitIds,
+      @JsonKey(name: 'date_created') DateTime dateCreated});
 }
 
 /// @nodoc
@@ -143,10 +142,10 @@ class __$$CollectionImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$CollectionImpl implements _Collection {
   const _$CollectionImpl(
-      {@HiveField(0) required this.id,
-      @HiveField(1) required final List<String> itemIds,
-      @HiveField(2) required final List<String> outfitIds,
-      @HiveField(3) required this.dateCreated})
+      {required this.id,
+      @JsonKey(name: 'item_ids') required final List<String> itemIds,
+      @JsonKey(name: 'outfit_ids') required final List<String> outfitIds,
+      @JsonKey(name: 'date_created') required this.dateCreated})
       : _itemIds = itemIds,
         _outfitIds = outfitIds;
 
@@ -154,11 +153,10 @@ class _$CollectionImpl implements _Collection {
       _$$CollectionImplFromJson(json);
 
   @override
-  @HiveField(0)
   final String id;
   final List<String> _itemIds;
   @override
-  @HiveField(1)
+  @JsonKey(name: 'item_ids')
   List<String> get itemIds {
     if (_itemIds is EqualUnmodifiableListView) return _itemIds;
     // ignore: implicit_dynamic_type
@@ -167,7 +165,7 @@ class _$CollectionImpl implements _Collection {
 
   final List<String> _outfitIds;
   @override
-  @HiveField(2)
+  @JsonKey(name: 'outfit_ids')
   List<String> get outfitIds {
     if (_outfitIds is EqualUnmodifiableListView) return _outfitIds;
     // ignore: implicit_dynamic_type
@@ -175,7 +173,7 @@ class _$CollectionImpl implements _Collection {
   }
 
   @override
-  @HiveField(3)
+  @JsonKey(name: 'date_created')
   final DateTime dateCreated;
 
   @override
@@ -221,25 +219,25 @@ class _$CollectionImpl implements _Collection {
 
 abstract class _Collection implements Collection {
   const factory _Collection(
-      {@HiveField(0) required final String id,
-      @HiveField(1) required final List<String> itemIds,
-      @HiveField(2) required final List<String> outfitIds,
-      @HiveField(3) required final DateTime dateCreated}) = _$CollectionImpl;
+          {required final String id,
+          @JsonKey(name: 'item_ids') required final List<String> itemIds,
+          @JsonKey(name: 'outfit_ids') required final List<String> outfitIds,
+          @JsonKey(name: 'date_created') required final DateTime dateCreated}) =
+      _$CollectionImpl;
 
   factory _Collection.fromJson(Map<String, dynamic> json) =
       _$CollectionImpl.fromJson;
 
   @override
-  @HiveField(0)
   String get id;
   @override
-  @HiveField(1)
+  @JsonKey(name: 'item_ids')
   List<String> get itemIds;
   @override
-  @HiveField(2)
+  @JsonKey(name: 'outfit_ids')
   List<String> get outfitIds;
   @override
-  @HiveField(3)
+  @JsonKey(name: 'date_created')
   DateTime get dateCreated;
   @override
   @JsonKey(ignore: true)

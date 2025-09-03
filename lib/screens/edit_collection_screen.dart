@@ -4,7 +4,7 @@ import '../constants/app_theme.dart';
 import '../cubit/collection_cubit.dart';
 import '../bloc/clothing_bloc.dart';
 import '../bloc/clothing_state.dart';
-import '../repositories/hive_outfit_repository.dart';
+import '../repositories/supabase_outfit_repository.dart';
 import '../models/models.dart';
 import '../widgets/clothing_item_widget.dart';
 
@@ -52,7 +52,7 @@ class _EditCollectionScreenState extends State<EditCollectionScreen>
 
   Future<void> _loadOutfits() async {
     try {
-      final outfitRepository = context.read<HiveOutfitRepository>();
+      final outfitRepository = context.read<SupabaseOutfitRepository>();
       final outfits = await outfitRepository.getAllOutfits();
       setState(() {
         _allOutfits = outfits;

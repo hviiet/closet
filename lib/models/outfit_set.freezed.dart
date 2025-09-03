@@ -20,17 +20,13 @@ OutfitSet _$OutfitSetFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$OutfitSet {
-  @HiveField(0)
   String get id => throw _privateConstructorUsedError;
-  @HiveField(1)
   String get name => throw _privateConstructorUsedError;
-  @HiveField(2)
+  @JsonKey(name: 'item_ids')
   List<String> get itemIds => throw _privateConstructorUsedError;
-  @HiveField(3)
+  @JsonKey(name: 'date_created')
   DateTime get dateCreated => throw _privateConstructorUsedError;
-  @HiveField(4)
   String? get notes => throw _privateConstructorUsedError;
-  @HiveField(5)
   List<String>? get tags => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -45,12 +41,12 @@ abstract class $OutfitSetCopyWith<$Res> {
       _$OutfitSetCopyWithImpl<$Res, OutfitSet>;
   @useResult
   $Res call(
-      {@HiveField(0) String id,
-      @HiveField(1) String name,
-      @HiveField(2) List<String> itemIds,
-      @HiveField(3) DateTime dateCreated,
-      @HiveField(4) String? notes,
-      @HiveField(5) List<String>? tags});
+      {String id,
+      String name,
+      @JsonKey(name: 'item_ids') List<String> itemIds,
+      @JsonKey(name: 'date_created') DateTime dateCreated,
+      String? notes,
+      List<String>? tags});
 }
 
 /// @nodoc
@@ -111,12 +107,12 @@ abstract class _$$OutfitSetImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {@HiveField(0) String id,
-      @HiveField(1) String name,
-      @HiveField(2) List<String> itemIds,
-      @HiveField(3) DateTime dateCreated,
-      @HiveField(4) String? notes,
-      @HiveField(5) List<String>? tags});
+      {String id,
+      String name,
+      @JsonKey(name: 'item_ids') List<String> itemIds,
+      @JsonKey(name: 'date_created') DateTime dateCreated,
+      String? notes,
+      List<String>? tags});
 }
 
 /// @nodoc
@@ -170,12 +166,12 @@ class __$$OutfitSetImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$OutfitSetImpl implements _OutfitSet {
   const _$OutfitSetImpl(
-      {@HiveField(0) required this.id,
-      @HiveField(1) required this.name,
-      @HiveField(2) required final List<String> itemIds,
-      @HiveField(3) required this.dateCreated,
-      @HiveField(4) this.notes,
-      @HiveField(5) final List<String>? tags})
+      {required this.id,
+      required this.name,
+      @JsonKey(name: 'item_ids') required final List<String> itemIds,
+      @JsonKey(name: 'date_created') required this.dateCreated,
+      this.notes,
+      final List<String>? tags})
       : _itemIds = itemIds,
         _tags = tags;
 
@@ -183,14 +179,12 @@ class _$OutfitSetImpl implements _OutfitSet {
       _$$OutfitSetImplFromJson(json);
 
   @override
-  @HiveField(0)
   final String id;
   @override
-  @HiveField(1)
   final String name;
   final List<String> _itemIds;
   @override
-  @HiveField(2)
+  @JsonKey(name: 'item_ids')
   List<String> get itemIds {
     if (_itemIds is EqualUnmodifiableListView) return _itemIds;
     // ignore: implicit_dynamic_type
@@ -198,14 +192,12 @@ class _$OutfitSetImpl implements _OutfitSet {
   }
 
   @override
-  @HiveField(3)
+  @JsonKey(name: 'date_created')
   final DateTime dateCreated;
   @override
-  @HiveField(4)
   final String? notes;
   final List<String>? _tags;
   @override
-  @HiveField(5)
   List<String>? get tags {
     final value = _tags;
     if (value == null) return null;
@@ -260,33 +252,29 @@ class _$OutfitSetImpl implements _OutfitSet {
 
 abstract class _OutfitSet implements OutfitSet {
   const factory _OutfitSet(
-      {@HiveField(0) required final String id,
-      @HiveField(1) required final String name,
-      @HiveField(2) required final List<String> itemIds,
-      @HiveField(3) required final DateTime dateCreated,
-      @HiveField(4) final String? notes,
-      @HiveField(5) final List<String>? tags}) = _$OutfitSetImpl;
+      {required final String id,
+      required final String name,
+      @JsonKey(name: 'item_ids') required final List<String> itemIds,
+      @JsonKey(name: 'date_created') required final DateTime dateCreated,
+      final String? notes,
+      final List<String>? tags}) = _$OutfitSetImpl;
 
   factory _OutfitSet.fromJson(Map<String, dynamic> json) =
       _$OutfitSetImpl.fromJson;
 
   @override
-  @HiveField(0)
   String get id;
   @override
-  @HiveField(1)
   String get name;
   @override
-  @HiveField(2)
+  @JsonKey(name: 'item_ids')
   List<String> get itemIds;
   @override
-  @HiveField(3)
+  @JsonKey(name: 'date_created')
   DateTime get dateCreated;
   @override
-  @HiveField(4)
   String? get notes;
   @override
-  @HiveField(5)
   List<String>? get tags;
   @override
   @JsonKey(ignore: true)

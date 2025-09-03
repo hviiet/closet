@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../cubit/theme_cubit.dart';
+import '../cubit/auth_cubit.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -50,95 +51,137 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
           // Content Section
           SliverToBoxAdapter(
-            child: ListView(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
+            child: Padding(
               padding: const EdgeInsets.all(16),
-              children: [
-                _buildSection(
-                  'General',
-                  [
-                    BlocBuilder<ThemeCubit, bool>(
-                      builder: (context, isDarkMode) {
-                        return _buildSettingsTile(
-                          icon: Icons.dark_mode,
-                          title: 'Theme',
-                          subtitle: isDarkMode ? 'Dark mode' : 'Light mode',
-                          trailing: Switch(
-                            value: isDarkMode,
-                            onChanged: (value) {
-                              context.read<ThemeCubit>().toggleTheme();
-                            },
-                            activeColor: colorScheme.primary,
-                          ),
-                        );
-                      },
-                    ),
-                    _buildSettingsTile(
-                      icon: Icons.notifications,
-                      title: 'Notifications',
-                      subtitle: 'Enable notifications',
-                      trailing: Switch(
-                        value: true,
-                        onChanged: (value) {
-                          // TODO: Implement notification settings
+              child: Column(
+                children: [
+                  _buildSection(
+                    'General',
+                    [
+                      BlocBuilder<ThemeCubit, bool>(
+                        builder: (context, isDarkMode) {
+                          return _buildSettingsTile(
+                            icon: Icons.dark_mode,
+                            title: 'Theme',
+                            subtitle: isDarkMode ? 'Dark mode' : 'Light mode',
+                            trailing: Switch(
+                              value: isDarkMode,
+                              onChanged: (value) {
+                                context.read<ThemeCubit>().toggleTheme();
+                              },
+                              thumbColor:
+                                  WidgetStateProperty.resolveWith<Color>(
+                                      (states) {
+                                if (states.contains(WidgetState.selected)) {
+                                  return colorScheme.primary;
+                                }
+                                return colorScheme.outline;
+                              }),
+                              trackColor:
+                                  WidgetStateProperty.resolveWith<Color>(
+                                      (states) {
+                                if (states.contains(WidgetState.selected)) {
+                                  return colorScheme.primary
+                                      .withValues(alpha: 0.5);
+                                }
+                                return colorScheme.surfaceContainerHighest;
+                              }),
+                            ),
+                          );
                         },
-                        activeColor: colorScheme.primary,
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 24),
-                _buildSection(
-                  'Storage',
-                  [
-                    _buildSettingsTile(
-                      icon: Icons.storage,
-                      title: 'Data Management',
-                      subtitle: 'Manage your data',
-                      onTap: () {
-                        // TODO: Implement data management
-                      },
-                    ),
-                    _buildSettingsTile(
-                      icon: Icons.backup,
-                      title: 'Backup & Sync',
-                      subtitle: 'Cloud backup settings',
-                      onTap: () {
-                        // TODO: Implement backup settings
-                      },
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 24),
-                _buildSection(
-                  'About',
-                  [
-                    _buildSettingsTile(
-                      icon: Icons.info,
-                      title: 'App Version',
-                      subtitle: '1.0.0',
-                      onTap: () {},
-                    ),
-                    _buildSettingsTile(
-                      icon: Icons.help,
-                      title: 'Help & Support',
-                      subtitle: 'Get help and support',
-                      onTap: () {
-                        // TODO: Implement help screen
-                      },
-                    ),
-                    _buildSettingsTile(
-                      icon: Icons.privacy_tip,
-                      title: 'Privacy Policy',
-                      subtitle: 'Read our privacy policy',
-                      onTap: () {
-                        // TODO: Implement privacy policy
-                      },
-                    ),
-                  ],
-                ),
-              ],
+                      _buildSettingsTile(
+                        icon: Icons.notifications,
+                        title: 'Notifications',
+                        subtitle: 'Enable notifications',
+                        trailing: Switch(
+                          value: true,
+                          onChanged: (value) {
+                            // TODO: Implement notification settings
+                          },
+                          thumbColor:
+                              WidgetStateProperty.resolveWith<Color>((states) {
+                            if (states.contains(WidgetState.selected)) {
+                              return colorScheme.primary;
+                            }
+                            return colorScheme.outline;
+                          }),
+                          trackColor:
+                              WidgetStateProperty.resolveWith<Color>((states) {
+                            if (states.contains(WidgetState.selected)) {
+                              return colorScheme.primary.withValues(alpha: 0.5);
+                            }
+                            return colorScheme.surfaceContainerHighest;
+                          }),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+                  _buildSection(
+                    'Storage',
+                    [
+                      _buildSettingsTile(
+                        icon: Icons.storage,
+                        title: 'Data Management',
+                        subtitle: 'Manage your data',
+                        onTap: () {
+                          // TODO: Implement data management
+                        },
+                      ),
+                      _buildSettingsTile(
+                        icon: Icons.backup,
+                        title: 'Backup & Sync',
+                        subtitle: 'Cloud backup settings',
+                        onTap: () {
+                          // TODO: Implement backup settings
+                        },
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+                  _buildSection(
+                    'Account',
+                    [
+                      _buildSettingsTile(
+                        icon: Icons.logout,
+                        title: 'Sign Out',
+                        subtitle: 'Sign out of your account',
+                        onTap: () => _showSignOutDialog(context),
+                        trailing: const Icon(Icons.logout, color: Colors.red),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+                  _buildSection(
+                    'About',
+                    [
+                      _buildSettingsTile(
+                        icon: Icons.info,
+                        title: 'App Version',
+                        subtitle: '1.0.0',
+                        onTap: () {},
+                      ),
+                      _buildSettingsTile(
+                        icon: Icons.help,
+                        title: 'Help & Support',
+                        subtitle: 'Get help and support',
+                        onTap: () {
+                          // TODO: Implement help screen
+                        },
+                      ),
+                      _buildSettingsTile(
+                        icon: Icons.privacy_tip,
+                        title: 'Privacy Policy',
+                        subtitle: 'Read our privacy policy',
+                        onTap: () {
+                          // TODO: Implement privacy policy
+                        },
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ],
@@ -195,6 +238,66 @@ class _SettingsScreenState extends State<SettingsScreen> {
       trailing:
           trailing ?? (onTap != null ? const Icon(Icons.chevron_right) : null),
       onTap: onTap,
+    );
+  }
+
+  void _showSignOutDialog(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(28),
+        ),
+        icon: Icon(
+          Icons.logout,
+          color: colorScheme.primary,
+          size: 32,
+        ),
+        title: Text(
+          'Sign Out?',
+          style: theme.textTheme.headlineSmall?.copyWith(
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        content: Text(
+          'Are you sure you want to sign out? You will need to sign in again to access your wardrobe.',
+          style: theme.textTheme.bodyMedium,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () async {
+              Navigator.of(context).pop(); // Close the dialog
+
+              try {
+                await context.read<AuthCubit>().signOut();
+                // The auth state change will be handled by the AuthWrapper
+                // which will navigate back to the AuthScreen
+              } catch (e) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Failed to sign out: $e'),
+                      backgroundColor: colorScheme.error,
+                    ),
+                  );
+                }
+              }
+            },
+            style: FilledButton.styleFrom(
+              backgroundColor: colorScheme.primary,
+              foregroundColor: colorScheme.onPrimary,
+            ),
+            child: const Text('Sign Out'),
+          ),
+        ],
+      ),
     );
   }
 }

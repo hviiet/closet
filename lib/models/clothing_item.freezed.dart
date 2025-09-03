@@ -20,13 +20,11 @@ ClothingItem _$ClothingItemFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$ClothingItem {
-  @HiveField(0)
   String get id => throw _privateConstructorUsedError;
-  @HiveField(1)
+  @JsonKey(name: 'image_path')
   String get imagePath => throw _privateConstructorUsedError;
-  @HiveField(2)
   ClothingCategory get category => throw _privateConstructorUsedError;
-  @HiveField(3)
+  @JsonKey(name: 'date_added')
   DateTime get dateAdded => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -42,10 +40,10 @@ abstract class $ClothingItemCopyWith<$Res> {
       _$ClothingItemCopyWithImpl<$Res, ClothingItem>;
   @useResult
   $Res call(
-      {@HiveField(0) String id,
-      @HiveField(1) String imagePath,
-      @HiveField(2) ClothingCategory category,
-      @HiveField(3) DateTime dateAdded});
+      {String id,
+      @JsonKey(name: 'image_path') String imagePath,
+      ClothingCategory category,
+      @JsonKey(name: 'date_added') DateTime dateAdded});
 }
 
 /// @nodoc
@@ -96,10 +94,10 @@ abstract class _$$ClothingItemImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {@HiveField(0) String id,
-      @HiveField(1) String imagePath,
-      @HiveField(2) ClothingCategory category,
-      @HiveField(3) DateTime dateAdded});
+      {String id,
+      @JsonKey(name: 'image_path') String imagePath,
+      ClothingCategory category,
+      @JsonKey(name: 'date_added') DateTime dateAdded});
 }
 
 /// @nodoc
@@ -143,25 +141,23 @@ class __$$ClothingItemImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$ClothingItemImpl implements _ClothingItem {
   const _$ClothingItemImpl(
-      {@HiveField(0) required this.id,
-      @HiveField(1) required this.imagePath,
-      @HiveField(2) required this.category,
-      @HiveField(3) required this.dateAdded});
+      {required this.id,
+      @JsonKey(name: 'image_path') required this.imagePath,
+      required this.category,
+      @JsonKey(name: 'date_added') required this.dateAdded});
 
   factory _$ClothingItemImpl.fromJson(Map<String, dynamic> json) =>
       _$$ClothingItemImplFromJson(json);
 
   @override
-  @HiveField(0)
   final String id;
   @override
-  @HiveField(1)
+  @JsonKey(name: 'image_path')
   final String imagePath;
   @override
-  @HiveField(2)
   final ClothingCategory category;
   @override
-  @HiveField(3)
+  @JsonKey(name: 'date_added')
   final DateTime dateAdded;
 
   @override
@@ -204,25 +200,24 @@ class _$ClothingItemImpl implements _ClothingItem {
 
 abstract class _ClothingItem implements ClothingItem {
   const factory _ClothingItem(
-      {@HiveField(0) required final String id,
-      @HiveField(1) required final String imagePath,
-      @HiveField(2) required final ClothingCategory category,
-      @HiveField(3) required final DateTime dateAdded}) = _$ClothingItemImpl;
+          {required final String id,
+          @JsonKey(name: 'image_path') required final String imagePath,
+          required final ClothingCategory category,
+          @JsonKey(name: 'date_added') required final DateTime dateAdded}) =
+      _$ClothingItemImpl;
 
   factory _ClothingItem.fromJson(Map<String, dynamic> json) =
       _$ClothingItemImpl.fromJson;
 
   @override
-  @HiveField(0)
   String get id;
   @override
-  @HiveField(1)
+  @JsonKey(name: 'image_path')
   String get imagePath;
   @override
-  @HiveField(2)
   ClothingCategory get category;
   @override
-  @HiveField(3)
+  @JsonKey(name: 'date_added')
   DateTime get dateAdded;
   @override
   @JsonKey(ignore: true)

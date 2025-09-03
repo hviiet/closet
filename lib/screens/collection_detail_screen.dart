@@ -3,9 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../constants/app_theme.dart';
 import '../cubit/collection_cubit.dart';
 import '../models/models.dart';
-import '../repositories/hive_clothing_repository.dart';
-import '../repositories/hive_outfit_repository.dart';
-import '../repositories/hive_collection_repository.dart';
+import '../repositories/supabase_clothing_repository.dart';
+import '../repositories/supabase_outfit_repository.dart';
+import '../repositories/supabase_collection_repository.dart';
 import '../widgets/clothing_item_widget.dart';
 import 'edit_collection_screen.dart';
 
@@ -47,9 +47,9 @@ class _CollectionDetailScreenState extends State<CollectionDetailScreen>
     try {
       setState(() => _isLoading = true);
 
-      final clothingRepo = context.read<HiveClothingRepository>();
-      final outfitRepo = context.read<HiveOutfitRepository>();
-      final collectionRepo = context.read<HiveCollectionRepository>();
+      final clothingRepo = context.read<SupabaseClothingRepository>();
+      final outfitRepo = context.read<SupabaseOutfitRepository>();
+      final collectionRepo = context.read<SupabaseCollectionRepository>();
 
       // Get the latest collection data
       final latestCollection =

@@ -288,10 +288,6 @@ ThemeData get darkTheme => ThemeData(
 
 // Modern Typography using Google Fonts
 TextTheme _buildTextTheme(Brightness brightness) {
-  final Color textColor = brightness == Brightness.light
-      ? const Color(0xFF1D1B20)
-      : const Color(0xFFE6E0E9);
-
   return const TextTheme();
 }
 
