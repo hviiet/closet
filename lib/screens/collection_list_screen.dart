@@ -59,15 +59,17 @@ class _CollectionListScreenState extends State<CollectionListScreen> {
           ),
 
           // Content Section
-          SliverToBoxAdapter(
-            child: BlocBuilder<CollectionCubit, CollectionState>(
-              builder: (context, state) {
-                if (state.status == CollectionStatus.loading) {
-                  return const Center(child: CircularProgressIndicator());
-                }
+          BlocBuilder<CollectionCubit, CollectionState>(
+            builder: (context, state) {
+              if (state.status == CollectionStatus.loading) {
+                return const SliverFillRemaining(
+                  child: Center(child: CircularProgressIndicator()),
+                );
+              }
 
-                if (state.status == CollectionStatus.failure) {
-                  return Center(
+              if (state.status == CollectionStatus.failure) {
+                return SliverFillRemaining(
+                  child: Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -91,11 +93,13 @@ class _CollectionListScreenState extends State<CollectionListScreen> {
                         ),
                       ],
                     ),
-                  );
-                }
+                  ),
+                );
+              }
 
-                if (state.collections.isEmpty) {
-                  return Center(
+              if (state.collections.isEmpty) {
+                return SliverFillRemaining(
+                  child: Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -121,82 +125,91 @@ class _CollectionListScreenState extends State<CollectionListScreen> {
                         ),
                       ],
                     ),
-                  );
-                }
+                  ),
+                );
+              }
 
-                return ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  padding: const EdgeInsets.all(16),
-                  itemCount: state.collections.length,
-                  itemBuilder: (context, index) {
-                    final collection = state.collections[index];
-                    return Card(
-                      margin: const EdgeInsets.only(bottom: 12),
-                      child: ListTile(
-                        leading: CircleAvatar(
-                          backgroundColor:
-                              context.theme.greenPrimary.withValues(alpha: 0.2),
-                          child: Icon(
-                            Icons.collections,
-                            color: context.theme.greenPrimary,
+              return SliverPadding(
+                padding: const EdgeInsets.all(16),
+                sliver: SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                    (context, index) {
+                      final collection = state.collections[index];
+                      return Padding(
+                        padding: EdgeInsets.only(
+                          bottom:
+                              index < state.collections.length - 1 ? 12.0 : 0.0,
+                        ),
+                        child: Card(
+                          margin: EdgeInsets.zero,
+                          child: ListTile(
+                            leading: CircleAvatar(
+                              backgroundColor: context.theme.greenPrimary
+                                  .withValues(alpha: 0.2),
+                              child: Icon(
+                                Icons.collections,
+                                color: context.theme.greenPrimary,
+                              ),
+                            ),
+                            title: Text(
+                              'Collection ${collection.id}',
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.w500),
+                            ),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                    '${collection.itemIds.length} items, ${collection.outfitIds.length} outfits'),
+                                Text(
+                                  'Created: ${_formatDate(collection.dateCreated)}',
+                                  style: TextStyle(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurfaceVariant,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            trailing: PopupMenuButton(
+                              onSelected: (value) {
+                                if (value == 'delete') {
+                                  _showDeleteDialog(context, collection);
+                                }
+                              },
+                              itemBuilder: (context) => [
+                                const PopupMenuItem(
+                                  value: 'delete',
+                                  child: Row(
+                                    children: [
+                                      Icon(Icons.delete, color: Colors.red),
+                                      SizedBox(width: 8),
+                                      Text('Delete'),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => CollectionDetailScreen(
+                                    collection: collection,
+                                  ),
+                                ),
+                              );
+                            },
                           ),
                         ),
-                        title: Text(
-                          'Collection ${collection.id}',
-                          style: const TextStyle(fontWeight: FontWeight.w500),
-                        ),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                                '${collection.itemIds.length} items, ${collection.outfitIds.length} outfits'),
-                            Text(
-                              'Created: ${_formatDate(collection.dateCreated)}',
-                              style: TextStyle(
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .onSurfaceVariant,
-                                fontSize: 12,
-                              ),
-                            ),
-                          ],
-                        ),
-                        trailing: PopupMenuButton(
-                          onSelected: (value) {
-                            if (value == 'delete') {
-                              _showDeleteDialog(context, collection);
-                            }
-                          },
-                          itemBuilder: (context) => [
-                            const PopupMenuItem(
-                              value: 'delete',
-                              child: Row(
-                                children: [
-                                  Icon(Icons.delete, color: Colors.red),
-                                  SizedBox(width: 8),
-                                  Text('Delete'),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => CollectionDetailScreen(
-                                collection: collection,
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    );
-                  },
-                );
-              },
-            ),
+                      );
+                    },
+                    childCount: state.collections.length,
+                  ),
+                ),
+              );
+            },
           ),
         ],
       ),

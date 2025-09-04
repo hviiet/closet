@@ -14,7 +14,7 @@ class SupabaseCollectionRepository implements CollectionRepository {
           .from('collections')
           .select()
           .eq('user_id', userId)
-          .order('created_at', ascending: false);
+          .order('date_created', ascending: false);
 
       return response
           .map((collection) => Collection.fromJson(collection))
@@ -48,10 +48,13 @@ class SupabaseCollectionRepository implements CollectionRepository {
       final userId = supabase.auth.currentUser!.id;
 
       await supabase.from('collections').insert({
-        ...collection.toJson(),
+        'item_ids': collection.itemIds,
+        'outfit_ids': collection.outfitIds,
+        'date_created': collection.dateCreated.toIso8601String(),
         'user_id': userId,
       });
     } catch (e) {
+      print(e.toString());
       throw Exception('Failed to add collection: $e');
     }
   }
@@ -97,7 +100,7 @@ class SupabaseCollectionRepository implements CollectionRepository {
           .select()
           .eq('user_id', userId)
           .ilike('name', '%$lowercaseQuery%')
-          .order('created_at', ascending: false);
+          .order('date_created', ascending: false);
 
       return response
           .map((collection) => Collection.fromJson(collection))
